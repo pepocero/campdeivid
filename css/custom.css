@@ -1,0 +1,551 @@
+/* Variables */
+:root {
+    --primary: #ff6b00;
+    --primary-dark: #e05d00;
+    --white: #ffffff;
+    --white-90: rgba(255, 255, 255, 0.9);
+    --black: #212529;
+    --gray: #6c757d;
+    --light: #f8f9fa;
+    --dark: #1a1a1a;
+}
+
+/* ESTO QUITA LOS MARGENES DE LA PAGINA*/
+.container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl, .container-xxl {
+    --bs-gutter-x: -0.1rem;
+}
+
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    color: var(--black);
+    line-height: 1.6;
+}
+
+h1, h2, h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section {
+    padding: 80px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.5rem;
+    color: var(--dark);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-outline {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+                url('../images/hero/curvas1.jpg') no-repeat center center/cover;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: var(--white);
+    position: relative;
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hero-content h1 {
+    font-size: clamp(2rem, 6vw, 4rem);
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+.text-light {
+    color: var(--white-90);
+    font-weight: 400;
+    display: block;
+}
+
+.text-accent {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 3vw, 1.3rem);
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+/* Cards */
+.card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+.card i {
+    font-size: 3rem;
+    color: var(--primary);
+    margin-bottom: 20px;
+}
+
+.card h3 {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    color: var(--dark);
+}
+
+.servicios {
+    text-align: center;
+}
+
+/* Añade esto a tu archivo CSS */
+
+/* Contenedor de la tarjeta de suscripción */
+.process-card.featured {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Asegura que todas las tarjetas tengan la misma altura */
+}
+
+/* Lista de beneficios */
+.process-card.featured ul {
+    flex-grow: 1; /* Hace que la lista ocupe todo el espacio disponible */
+    margin-bottom: 25px; /* Espacio antes del botón */
+}
+
+/* Botón de suscripción */
+.process-card.featured .btn-primary {
+    margin-top: auto; /* Empuja el botón hacia abajo */
+    align-self: center; /* Centra el botón horizontalmente */
+    width: 80%; /* Ancho consistente */
+    max-width: 250px; /* Ancho máximo */
+    margin-bottom: 15px; /* Espacio inferior */
+    padding: 12px 25px; /* Padding adecuado */
+    font-size: 1.1rem; /* Tamaño de fuente */
+    border-radius: 30px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(255, 107, 0, 0.3); /* Sombra naranja */
+    transition: all 0.3s ease;
+}
+
+/* Efecto hover */
+.process-card.featured .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(255, 107, 0, 0.4);
+}
+
+
+/* Dificultad */
+.difficulty-card {
+    color: var(--white);
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.novice {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.intermediate {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.advanced {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+/* Precios */
+.pricing-card {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+}
+
+.pricing-card.featured {
+    border: 3px solid var(--primary);
+    transform: scale(1.05);
+}
+
+.price {
+    font-size: 2rem;
+    margin: 20px 0;
+    color: var(--primary);
+}
+
+.price span {
+    font-size: 1rem;
+    color: var(--gray);
+}
+
+.pricing-card ul {
+    flex-grow: 1; /* Hace que la lista ocupe todo el espacio disponible */
+    margin-bottom: 20px; /* Espacio antes del botón */
+}
+
+.pricing-card ul li {
+    margin: 10px 0;
+    padding-left: 25px;
+    position: relative;
+}
+
+.pricing-card ul li:before {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+}
+
+/* Botones de precios */
+.pricing-card .btn {
+    margin-top: auto; /* Empuja el botón hacia abajo */
+    align-self: center; /* Centra el botón horizontalmente */
+    width: 80%; /* Ancho consistente para todos los botones */
+    margin-bottom: 15px; /* Espacio inferior */
+}
+
+/* Para el botón destacado */
+.pricing-card.featured .btn {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--dark);
+    color: var(--white);
+    padding: 50px 0 20px;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.footer-brand {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.footer-links {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-links a {
+    color: var(--white);
+    text-decoration: none;
+}
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icons a {
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.copyright {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid var(--gray);
+    color: var(--gray);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .section {
+        padding: 60px 0;
+    }
+
+    .hero-content {
+        padding: 20px 0;
+    }
+
+    .pricing-card.featured {
+        transform: none;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-links, .social-icons {
+        justify-content: center;
+    }
+}
+
+/* Sección Cómo Funciona */
+.process {
+    background-color: var(--light);
+}
+
+.section-subtitle {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 1.2rem;
+    color: var(--gray);
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+}
+
+@media (min-width: 992px) {
+    .process-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.process-card {
+    background: var(--white);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.process-card.featured {
+    border: 3px solid var(--primary);
+    position: relative;
+}
+
+.process-card:hover {
+    transform: translateY(-10px);
+}
+
+.process-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.process-header i {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-right: 15px;
+}
+
+.process-header h3 {
+    margin: 0;
+    color: var(--dark);
+}
+
+.process-option {
+    margin: 25px 0;
+    padding: 20px;
+    background: rgba(255, 107, 0, 0.05);
+    border-radius: 8px;
+}
+
+.process-option h4 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.process-note {
+    font-size: 0.9rem;
+    color: var(--gray);
+    font-style: italic;
+    margin-top: 20px;
+}
+
+.price-tag {
+    font-weight: bold;
+    color: var(--primary);
+    margin: 15px 0;
+    font-size: 1.1rem;
+}
+
+.fa-crown {
+    color: var(--primary);
+    font-size: 2rem;
+}
+/*Fin seccion Como Funciona*/
+
+
+/* Testimonios */
+.testimonials {
+    background-color: #f9f9f9;
+    padding: 80px 0;
+}
+
+.testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.testimonial-card {
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.testimonial-author {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.author-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+    border: 3px solid var(--primary);
+}
+
+.author-info h4 {
+    margin: 0;
+    color: var(--dark);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+}
+
+.author-detail {
+    font-size: 0.9rem;
+    color: var(--primary);
+    margin: 5px 0;
+    font-weight: 600;
+}
+
+.author-stats {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin: 0;
+}
+
+.rating {
+    color: var(--primary);
+    margin: 10px 0 15px;
+    font-size: 1.1rem;
+}
+
+.testimonial-content {
+    flex-grow: 1;
+}
+
+.testimonial-text {
+    font-style: italic;
+    line-height: 1.6;
+    position: relative;
+    padding: 0 10px;
+    margin: 0;
+}
+
+.testimonial-text::before,
+.testimonial-text::after {
+    content: '"';
+    font-size: 1.5rem;
+    color: var(--primary);
+    opacity: 0.3;
+    position: absolute;
+}
+
+.testimonial-text::before {
+    top: -10px;
+    left: -5px;
+}
+
+.testimonial-text::after {
+    bottom: -15px;
+    right: -5px;
+}
+
+@media (max-width: 768px) {
+    .testimonials-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .testimonial-card {
+        padding: 20px;
+    }
+}
+/* Fin Sección de Testimonios */
+
