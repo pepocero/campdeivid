@@ -20,8 +20,8 @@ if (!securePage($_SERVER['PHP_SELF'])){die();}
         <div class="container">
             <div class="hero-content">
                 <h1><span class="text-light">Rutas en Moto</span> <span class="text-accent">Planificadas al Detalle</span></h1>
-                <p class="hero-subtitle">Descarga rutas en formato GPX, reserva hoteles y disfruta de viajes sin preocupaciones.</p>
-                <a href="#rutas" class="btn btn-primary">Explorar Rutas</a>
+                <p class="hero-subtitle">Descarga rutas en formato GPX, con reservas en hoteles y restaurantes, y disfruta de viajes sin preocupaciones.</p>
+                <a href="rutas.php" class="btn btn-primary">Explorar Rutas</a>
             </div>
         </div>
     </section>
@@ -121,7 +121,7 @@ if (!securePage($_SERVER['PHP_SELF'])){die();}
                 <ul>
                     <li>Acceso y descarga GPX de todas nuestras rutas</li>
                     <li>Información detallada de Puntos de Interés</li>
-                    <li>Modificaciones y paradas personalizadas</li>
+                    <li>Puedes solicitar modificaciones y paradas adecuadas a tus necesidades</li>
                     <li>Planificación de paradas de repostaje</li>
                     <li>Planificación flexible de comidas</li>
                     <li>Descuentos exclusivos en colaboradores</li>
