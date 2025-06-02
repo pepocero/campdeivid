@@ -1,0 +1,14 @@
+/* ESTO ES PARA CAMBIAE EL COLOR DE LA BARRA DE MENU PRINCIPAL */
+ul.us_menu.dark, ul.us_menu.dark .us_sub-menu li, ul.us_menu.dark li:hover, ul.us_menu.dark ul.us_sub-menu {
+    background-color: #820F2F;
+}
+
+/*EL BADGE DEL FILTRO DE RUTAS*/
+.badge-dark {
+    background-color: #820F2F !important; 
+    padding: 0.5rem !important;
+    /* Hacer un degradado */
+    background-image: linear-gradient(to right, #820F2F, #a14f4f);
+    /* Bordes redondeados */
+    border-radius: 10px;
+}

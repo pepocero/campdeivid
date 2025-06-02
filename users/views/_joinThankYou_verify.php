@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ?>
 <div class="row">
   <div class="col-12 text-center py-5">
-    <h1><?=lang("JOIN_SUC");?><?=$settings->site_name?></h1>
-    <p><?=lang("VER_RES_SUC");?><?=$settings->join_vericode_expiry?> <?=lang("T_HOURS");?>.</p>
+    <h1>Bienvenido a Candeivid</h1>
+    <p>Su enlace de verificación ha sido enviado a su dirección de correo electrónico. Haga clic en el enlace del correo electrónico para completar la verificación. Asegúrese de revisar su carpeta de spam si el correo electrónico no está en su bandeja de entrada. Los enlaces de verificación sólo son válidos por <?=$settings->join_vericode_expiry?> horas.</p>
   </div>
 </div>
