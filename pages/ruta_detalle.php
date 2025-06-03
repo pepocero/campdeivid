@@ -7,8 +7,6 @@ if (!securePage($_SERVER['PHP_SELF'])){die();}
 $ruta_id = Input::get('id');
 if(!$ruta_id || !is_numeric($ruta_id)) Redirect::to('rutas.php');
 
-
-
 try {
     $db = DB::getInstance();
     $ruta = $db->query("SELECT * FROM aa_rutas WHERE id = ?", [$ruta_id])->first();
@@ -61,192 +59,775 @@ try {
     Session::flash('error', $e->getMessage());
     Redirect::to('pages/rutas.php');
 }
-
-
-
 ?>
 
+<!-- PAYPAL SDK LIVE -->
+<script src="https://www.paypal.com/sdk/js?client-id=AYzvId4ZYPTgUbDOI3rK1pRiR_InW4iJgsVOAPxO5g2j3YmDzjEA6Z9hayiV7o0E23jLC8hP5e7U-t1Z&currency=EUR"></script>
+
+<!-- ESTILOS MEJORADOS PARA DISEÑO COMPACTO Y PROFESIONAL -->
 <style>
-/* Estilos generales basados en la paleta granate */
-:root {
-    --granate-base: #800000;
-    --granate-hover: #990000;
-    --granate-alert-text: #B30000;
-    --granate-alert-bg: #FFE5E5;
-    --granate-alert-border: #FF9999;
-    --granate-dark: #660000;
-    --granate-light: #FFCCCC;
+/* ===== CARRO DE COMPRA COMPACTO ===== */
+.purchase-card {
+    max-width: 380px !important;
+    margin: 0 auto;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 12px !important;
+    overflow: hidden;
 }
 
-.card-header.bg-primary {
-    background-color: var(--granate-base) !important;
-    border-bottom: 3px solid var(--granate-dark);
+.purchase-card .card-header {
+    padding: 1rem 1.25rem !important;
+    background: #ff0500 !important;
+    border: none !important;
 }
 
-.btn-primary {
-    background-color: var(--granate-base);
-    border-color: var(--granate-dark);
+.purchase-card .card-body {
+    padding: 1.5rem !important;
 }
 
-.btn-primary:hover {
-    background-color: var(--granate-hover);
-    border-color: var(--granate-dark);
-}
-
-/* Mejoras específicas para la tarjeta lateral */
-.card.sticky-top {
-    border: 1px solid var(--granate-alert-border);
-    box-shadow: 0 6px 12px rgba(128, 0, 0, 0.15) !important;
-}
-
-/* Estilos para los badges */
-.badge.bg-info {
-    background-color: #0d6efd !important;
-}
-.badge.bg-warning {
-    background-color: #ffc107 !important;
-}
-.badge.bg-danger {
-    background-color: var(--granate-base) !important;
-}
-.badge.bg-success {
-    background-color: #198754 !important;
-}
-.badge.bg-secondary {
-    background-color: #6c757d !important;
-}
-
-/* Mejoras para las alertas */
-.alert {
-    border-left: 4px solid;
-}
-.alert-danger {
-    background-color: var(--granate-alert-bg);
-    border-color: var(--granate-alert-text);
-    color: var(--granate-alert-text);
-}
-.alert-warning {
-    background-color: #FFF3CD;
-    border-color: #FFC107;
-    color: #856404;
-}
-
-/* Estilo para los puntos destacados */
-.card.h-100 {
-    transition: all 0.3s ease;
-    border: 1px solid var(--granate-alert-border);
-}
-.card.h-100:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(128, 0, 0, 0.2);
-}
-
-/* Mejoras en los checkboxes */
-.form-check-input:checked {
-    background-color: var(--granate-base);
-    border-color: var(--granate-dark);
-}
-
-.form-check-input:disabled {
-    opacity: 0.5;
-}
-
-/* Estilo para el precio total */
-h3.text-primary {
-    color: var(--granate-base) !important;
-    font-weight: 700;
-    font-size: 1.8rem;
-}
-
-/* Efecto hover para botones */
-.btn-lg {
-    transition: all 0.3s ease;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-.btn-lg:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(128, 0, 0, 0.3);
-}
-
-/* Mejoras en la imagen principal */
-.card-img-top {
-    border-bottom: 3px solid var(--granate-base);
-}
-
-/* Estilo para la información de ruta gratuita */
-.free-route-info {
-    background-color: rgba(25, 135, 84, 0.1);
-    border-left: 4px solid #198754;
-    border-radius: 4px;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-.free-route-info h5 {
-    color: #198754;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
-
-.download-btn-container {
-    text-align: center;
-    margin-top: 15px;
-}
-
-/* ✅ NUEVOS ESTILOS PARA OFERTAS */
+/* ===== SECCIÓN DE OFERTAS MEJORADA ===== */
 .precio-oferta-container {
     background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
-    border: 2px solid #ffeaa7;
+    border: 2px solid #dc3545;
     border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(255, 193, 7, 0.1);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+    animation: subtle-glow 3s ease-in-out infinite alternate;
 }
 
-.precio-original {
-    text-decoration: line-through;
-    color: #6c757d;
-    font-size: 1.2rem;
-    font-weight: 500;
-    margin-bottom: 5px;
-}
-
-.precio-con-descuento {
-    color: #dc3545;
-    font-weight: bold;
-    font-size: 2rem;
-    margin-bottom: 10px;
+@keyframes subtle-glow {
+    from { box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15); }
+    to { box-shadow: 0 6px 20px rgba(220, 53, 69, 0.25); }
 }
 
 .badge-descuento {
     background: linear-gradient(45deg, #dc3545, #ff6b6b);
     color: white;
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
     font-weight: bold;
-    animation: pulse 2s infinite;
-    display: inline-block;
-    margin-bottom: 10px;
+    text-align: center;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+    animation: pulse-offer 2s infinite;
+}
+
+@keyframes pulse-offer {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.precio-original {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 0.25rem;
+}
+
+.precio-con-descuento {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #dc3545;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .ahorro-info {
-    color: #198754;
+    background: linear-gradient(45deg, #28a745, #20c997);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 0.5rem;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+/* ===== PRECIO NORMAL MEJORADO ===== */
+.precio-normal {
+    font-size: 1.75rem !important;
+    font-weight: bold;
+    color: #007bff;
+    text-align: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e9ecef;
+    margin-bottom: 1rem;
+}
+
+/* ===== INFORMACIÓN PREMIUM COMPACTA ===== */
+.premium-info {
+    background: #f8f9fa;
+    border-left: 4px solid #007bff;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.premium-info h5 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #007bff;
+}
+
+.premium-feature {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.premium-feature:last-child {
+    margin-bottom: 0;
+}
+
+.premium-feature i {
+    color: #28a745;
+    margin-right: 0.5rem;
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+}
+
+/* ===== INFORMACIÓN RUTA GRATUITA ===== */
+.free-route-info {
+    background: #d4edda;
+    border-left: 4px solid #28a745;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0 8px 8px 0;
+}
+
+.free-route-info h5 {
+    color: #28a745;
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.free-feature {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.free-feature:last-child {
+    margin-bottom: 0;
+}
+
+.free-feature i {
+    color: #28a745;
+    margin-right: 0.5rem;
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+}
+
+/* ===== BOTÓN DE DESCARGA MEJORADO ===== */
+.download-btn-container {
+    margin-top: 1rem;
+}
+
+.download-btn-container .btn {
+    border-radius: 8px;
     font-weight: 600;
     font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    transition: all 0.3s ease;
 }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+.download-btn-container .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+/* ===== PAYPAL BUTTON CONTAINER ===== */
+#paypal-button-container {
+    margin-top: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ===== RESPONSIVE MÓVIL ===== */
+@media (max-width: 768px) {
+    .purchase-card {
+        max-width: 100% !important;
+        margin: 0 0 2rem 0;
+    }
+    
+    .precio-con-descuento {
+        font-size: 1.75rem;
+    }
+    
+    .precio-normal {
+        font-size: 1.5rem !important;
+    }
+    
+    .premium-info,
+    .free-route-info {
+        margin-left: -15px;
+        margin-right: -15px;
+        border-radius: 0;
+        border-left: none;
+        border-top: 4px solid #007bff;
+    }
+    
+    .free-route-info {
+        border-top-color: #28a745;
+    }
+    
+    /* Asegurar que la oferta se vea bien en móvil */
+    .precio-oferta-container {
+        margin-left: -15px;
+        margin-right: -15px;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: 3px solid #dc3545;
+        border-bottom: 3px solid #dc3545;
+    }
+}
+
+/* ===== MEJORAS GENERALES DE LAYOUT ===== */
+.container-fluid {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.sticky-top {
+    top: 20px !important;
+}
+
+@media (min-width: 992px) {
+    .col-md-4 {
+        padding-left: 2rem;
+    }
+}
+
+/* ===== ESTILOS PARA BADGES ===== */
+.badge {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+}
+
+/* ===== ALERTA MEJORADA ===== */
+.alert-warning {
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    color: #856404;
+    padding: 1rem;
+    font-size: 0.9rem;
+}
+
+.alert-warning a {
+    color: #007bff;
+    font-weight: 600;
+}
+
+/* ===== MEJORAS TIPOGRÁFICAS ===== */
+.card-title {
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.card-text {
+    color: #FFFFFF;
+    line-height: 1.5;
+}
+
+/* ===== OCULTAR SCROLL EN CONTENEDORES PEQUEÑOS ===== */
+.purchase-card {
+    overflow-x: hidden;
+}
+
+/* ===== GALERÍA OPTIMIZADA PARA MÓVILES ===== */
+
+/* Desktop: altura normal */
+.slideshow-wrapper {
+    overflow: hidden;
+    border-radius: 8px;
+    position: relative;
+    height: 60vh;
+    min-height: 300px;
+    max-height: 500px;
+    background: #000;
+    border: 2px solid #ddd;
+    width: 100%;
+}
+
+/* Móvil: altura optimizada */
+@media (max-width: 768px) {
+    .slideshow-wrapper {
+        height: 70vh;
+        min-height: 350px;
+        max-height: none;
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+}
+
+/* Contenedor de slides con zoom */
+.slides-container {
+    display: flex;
+    height: 100%;
+    touch-action: none; /* Prevenir scroll mientras se hace zoom */
+    width: 100%;
+}
+
+.slide {
+    min-width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    overflow: hidden;
+}
+
+/* Imagen optimizada */
+.slide-image {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+    cursor: grab;
+}
+
+.slide-image:active {
+    cursor: grabbing;
+}
+
+/* En móvil: usar object-fit cover para llenar mejor */
+@media (max-width: 768px) {
+    .slide-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+}
+
+/* ===== PANTALLA COMPLETA CORREGIDA ===== */
+.simple-slideshow.fullscreen-mode {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; /* Dynamic viewport height para móviles */
+    z-index: 999999 !important;
+    background: #000 !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.simple-slideshow.fullscreen-mode .slideshow-wrapper {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important; /* Dynamic viewport height */
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #000 !important;
+}
+
+.simple-slideshow.fullscreen-mode .slide-image {
+    width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+}
+
+/* Controles de zoom */
+.zoom-controls {
+    position: absolute;
+    top: 60px;
+    left: 20px;
+    z-index: 30;
+    display: flex;
+    gap: 10px;
+}
+
+/* En pantalla completa, mover más abajo */
+.simple-slideshow.fullscreen-mode .zoom-controls {
+    top: 80px;
+    left: 25px;
+}
+
+.zoom-btn {
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.zoom-btn:hover, .zoom-btn:active {
+    background: rgba(0, 0, 0, 1);
+    transform: scale(1.05);
+}
+
+/* Solo mostrar controles de zoom en móvil */
+@media (min-width: 769px) {
+    .zoom-controls {
+        display: none;
+    }
+}
+
+/* En móviles en landscape, usar posiciones normales */
+@media (max-width: 768px) and (orientation: landscape) {
+    .zoom-controls {
+        top: 40px;
+        left: 15px;
+    }
+    
+    .fullscreen-btn {
+        top: 40px;
+        right: 15px;
+    }
+    
+    .zoom-indicator {
+        top: 40px;
+        right: 65px;
+    }
+    
+    .simple-slideshow.fullscreen-mode .zoom-controls {
+        top: 50px;
+        left: 20px;
+    }
+    
+    .simple-slideshow.fullscreen-mode .fullscreen-btn {
+        top: 50px;
+        right: 20px;
+    }
+    
+    .simple-slideshow.fullscreen-mode .zoom-indicator {
+        top: 50px;
+        right: 70px;
+    }
+}
+
+/* En móviles en portrait, usar posiciones normales */
+@media (max-width: 768px) and (orientation: portrait) {
+    .zoom-controls {
+        top: 70px;
+        left: 25px;
+    }
+    
+    .fullscreen-btn {
+        top: 70px;
+        right: 25px;
+    }
+    
+    .zoom-indicator {
+        top: 70px;
+        right: 80px;
+    }
+}
+
+/* Soporte para safe areas (dispositivos con notch) */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        .zoom-controls {
+            top: max(70px, env(safe-area-inset-top, 0px) + 20px);
+        }
+        
+        .fullscreen-btn {
+            top: max(70px, env(safe-area-inset-top, 0px) + 20px);
+        }
+        
+        .zoom-indicator {
+            top: max(70px, env(safe-area-inset-top, 0px) + 20px);
+        }
+        
+        .simple-slideshow.fullscreen-mode .zoom-controls {
+            top: max(80px, env(safe-area-inset-top, 0px) + 30px);
+            left: max(25px, env(safe-area-inset-left, 0px) + 25px);
+        }
+        
+        .simple-slideshow.fullscreen-mode .fullscreen-btn {
+            top: max(80px, env(safe-area-inset-top, 0px) + 30px);
+            right: max(25px, env(safe-area-inset-right, 0px) + 25px);
+        }
+        
+        .simple-slideshow.fullscreen-mode .zoom-indicator {
+            top: max(80px, env(safe-area-inset-top, 0px) + 30px);
+            right: max(85px, env(safe-area-inset-right, 0px) + 85px);
+        }
+    }
+}
+
+/* Indicador de zoom */
+.zoom-indicator {
+    position: absolute;
+    top: 60px;
+    right: 80px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    z-index: 30;
+    display: none;
+}
+
+/* En pantalla completa, ajustar posición */
+.simple-slideshow.fullscreen-mode .zoom-indicator {
+    top: 80px;
+    right: 85px;
+}
+
+/* Botón de pantalla completa mejorado */
+.fullscreen-btn {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* En pantalla completa, ajustar posición */
+.simple-slideshow.fullscreen-mode .fullscreen-btn {
+    top: 80px;
+    right: 25px;
+}
+
+.fullscreen-btn:hover, .fullscreen-btn:active {
+    background: rgba(0, 0, 0, 1);
+    transform: scale(1.05);
+}
+
+/* Controles en pantalla completa */
+.fullscreen-controls {
+    display: none;
+    position: absolute;
+    bottom: 120px; /* Mucho más arriba para evitar barra de navegación */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 35;
+    gap: 15px;
+}
+
+.simple-slideshow.fullscreen-mode .fullscreen-controls {
+    display: flex;
+}
+
+/* En landscape, subir aún más */
+@media (max-width: 768px) and (orientation: landscape) {
+    .fullscreen-controls {
+        bottom: 80px;
+    }
+}
+
+/* En dispositivos con notch o safe areas */
+@supports (padding: max(0px)) {
+    .fullscreen-controls {
+        bottom: max(120px, env(safe-area-inset-bottom, 0px) + 90px);
+    }
+    
+    @media (max-width: 768px) and (orientation: landscape) {
+        .fullscreen-controls {
+            bottom: max(80px, env(safe-area-inset-bottom, 0px) + 50px);
+        }
+    }
+}
+
+.fs-control-btn {
+    background: rgba(0, 0, 0, 0.8);
+    border: none;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+}
+
+.fs-control-btn:hover {
+    background: rgba(0, 0, 0, 1);
+}
+
+/* Indicadores mejorados */
+.slide-indicators {
+    position: absolute;
+    bottom: 25px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 30;
+}
+
+/* En pantalla completa en móvil, subir los indicadores */
+@media (max-width: 768px) {
+    .simple-slideshow.fullscreen-mode .slide-indicators {
+        bottom: 60px; /* Más arriba para evitar barra de navegación */
+    }
+}
+
+/* En landscape en pantalla completa */
+@media (max-width: 768px) and (orientation: landscape) {
+    .simple-slideshow.fullscreen-mode .slide-indicators {
+        bottom: 40px;
+    }
+}
+
+/* Con safe areas */
+@supports (padding: max(0px)) {
+    @media (max-width: 768px) {
+        .simple-slideshow.fullscreen-mode .slide-indicators {
+            bottom: max(60px, env(safe-area-inset-bottom, 0px) + 30px);
+        }
+    }
+    
+    @media (max-width: 768px) and (orientation: landscape) {
+        .simple-slideshow.fullscreen-mode .slide-indicators {
+            bottom: max(40px, env(safe-area-inset-bottom, 0px) + 20px);
+        }
+    }
+}
+
+.indicator-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.indicator-dot.active {
+    background: #fff !important;
+    box-shadow: 0 0 8px rgba(255,255,255,0.8) !important;
+    transform: scale(1.2);
+}
+
+.indicator-dot:not(.active) {
+    background: rgba(255,255,255,0.5) !important;
+    box-shadow: 0 0 3px rgba(0,0,0,0.5) !important;
+}
+
+/* Caption mejorado */
+.slide-caption {
+    position: absolute;
+    bottom: 180px; /* Más arriba para no chocar con controles */
+    left: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    z-index: 25;
+}
+
+/* En modo normal (no pantalla completa) */
+.slideshow-wrapper:not(.simple-slideshow.fullscreen-mode *) .slide-caption {
+    bottom: 50px;
+}
+
+/* En pantalla completa en móvil */
+@media (max-width: 768px) {
+    .simple-slideshow.fullscreen-mode .slide-caption {
+        bottom: 200px; /* Aún más arriba para dar espacio a controles */
+    }
+}
+
+/* En landscape */
+@media (max-width: 768px) and (orientation: landscape) {
+    .simple-slideshow.fullscreen-mode .slide-caption {
+        bottom: 150px;
+    }
+}
+
+/* Texto de ayuda mejorado */
+.help-text {
+    font-size: 11px;
+    color: #666;
+    text-align: center;
+    margin-top: 8px;
+    padding: 0 10px;
+}
+
+/* Animaciones suaves */
+.slide-image.zooming {
+    transition: transform 0.1s ease-out;
+}
+
+/* Prevenir selección de texto durante gestos */
+.slideshow-wrapper {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Estilos para cuando el body está en pantalla completa */
+body.fullscreen-active {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+    top: 0 !important;
+    left: 0 !important;
+}
+
+/* Ocultar scrollbars */
+body.fullscreen-active::-webkit-scrollbar {
+    display: none;
+}
+
+body.fullscreen-active {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 </style>
-
-<script src="https://www.paypal.com/sdk/js?client-id=AYzvId4ZYPTgUbDOI3rK1pRiR_InW4iJgsVOAPxO5g2j3YmDzjEA6Z9hayiV7o0E23jLC8hP5e7U-t1Z&currency=EUR"></script>
-
 
 <div class="container-fluid">
     <div class="row">
@@ -293,69 +874,51 @@ h3.text-primary {
                         </ul>
                         
                         <h4 class="mb-3 border-bottom pb-2">Descripción completa</h4>
-                        <div class="text-justify"><?php echo html_entity_decode($ruta->descripcion_completa); ?></div>
-                        
-                        <?php if(!empty($ruta->destacados)): ?>
-                        <h4 class="mt-4 mb-3 border-bottom pb-2">Puntos destacados</h4>
-                        <div class="row">
-                            <?php 
-                            $puntos_destacados = explode(",", $ruta->destacados);
-                            foreach($puntos_destacados as $punto): 
-                            ?>
-                            <div class="col-md-6 mb-3">
-                                <div class="card h-100 bg-secondary">
-                                    <div class="card-body">
-                                        <h5 class="card-title"><i class="fas fa-map-marker-alt text-primary"></i> <?= trim($punto) ?></h5>
-                                        <p class="card-text text-white">Lugar destacado en esta ruta</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <?php endif; ?>
+                        <div class="text-justify"><?php echo html_entity_decode($ruta->descripcion_completa); ?></div>                        
+                       
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
-            <div class="card sticky-top border-0" style="top: 20px;">
-                <div class="card-header bg-primary text-white">
+            <div class="card purchase-card sticky-top border-0">
+                <div class="card-header bg-primary">
                     <h4 class="mb-0 text-white text-center"><?= $esPremium ? 'COMPRAR RUTA' : 'DESCARGA LA RUTA' ?></h4>
                 </div>
                 <div class="card-body">
                     <?php if($esPremium): ?>
                     <!-- Información detallada sobre la ruta premium -->
-                    <div class="mb-4 p-3 bg-light rounded border-left border-primary" style="border-left-width: 4px !important;">
-                        <h5 class="mb-3"><i class="fas fa-route text-primary"></i> <strong>Ruta Premium</strong></h5>
+                    <div class="premium-info">
+                        <h5><i class="fas fa-route"></i> Ruta Premium</h5>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1"><strong>Cuidadosamente planificada</strong> por expertos motociclistas con años de experiencia</p>
+                        <div class="premium-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Cuidadosamente planificada</strong> por expertos motociclistas</span>
                         </div>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1"><strong>Track GPS de alta precisión</strong> optimizado para la mejor experiencia de conducción</p>
+                        <div class="premium-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Track GPS de alta precisión</strong> optimizado para conducción</span>
                         </div>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1"><strong>Descripción detallada</strong> con todos los puntos de interés y consejos relevantes</p>
+                        <div class="premium-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Descripción detallada</strong> con puntos de interés</span>
                         </div>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1"><strong>Ruta verificada</strong> y recorrida varias veces para garantizar la mejor experiencia</p>
+                        <div class="premium-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Ruta verificada</strong> y recorrida múltiples veces</span>
                         </div>
                         
-                        <div class="d-flex align-items-start">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-0"><strong>Soporte postventa</strong> para resolver cualquier duda sobre la ruta</p>
+                        <div class="premium-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span><strong>Soporte postventa</strong> para resolver dudas</span>
                         </div>
                     </div>
                     
-                    <!-- ✅ NUEVA SECCIÓN DE PRECIOS CON OFERTAS -->
+                    <!-- ✅ SECCIÓN DE PRECIOS CON OFERTAS MEJORADA -->
                     <?php if($tiene_oferta): ?>
                     <div class="precio-oferta-container">
                         <div class="badge-descuento">
@@ -375,10 +938,8 @@ h3.text-primary {
                         </div>
                     </div>
                     <?php else: ?>
-                    <div class="text-center py-3">
-                        <h3 class="text-primary mb-0">
-                            Precio: <span id="precio-total"><?= number_format($precio_final, 2) ?></span>€
-                        </h3>
+                    <div class="precio-normal">
+                        <i class="fas fa-euro-sign"></i> <?= number_format($precio_final, 2) ?>€
                     </div>
                     <?php endif; ?>
                     
@@ -387,21 +948,21 @@ h3.text-primary {
                     <?php else: ?>
                     <!-- Información para rutas gratuitas -->
                     <div class="free-route-info">
-                        <h5><i class="fas fa-gift me-2"></i>Ruta Gratuita</h5>
+                        <h5><i class="fas fa-gift"></i> Ruta Gratuita</h5>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1">Track GPX listo para usar en tu dispositivo GPS o smartphone</p>
+                        <div class="free-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Track GPX listo para usar en tu dispositivo GPS</span>
                         </div>
                         
-                        <div class="d-flex align-items-start mb-2">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-1">Ruta verificada para "<?= ucfirst($ruta->nivel) ?>"</p>
+                        <div class="free-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Ruta verificada para "<?= ucfirst($ruta->nivel) ?>"</span>
                         </div>
                         
-                        <div class="d-flex align-items-start">
-                            <i class="fas fa-check-circle text-success mt-1 me-2"></i>
-                            <p class="mb-0">Incluye puntos de interés destacados</p>
+                        <div class="free-feature">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Incluye puntos de interés destacados</span>
                         </div>
                     </div>
                     <?php endif; ?>
@@ -457,11 +1018,11 @@ paypal.Buttons({
 
                         <?php elseif($gpxExists): ?>
                             <div class="download-btn-container">
-                                <a href="<?= $gpxFile ?>" class="btn btn-success btn-lg w-100 py-3" download>
+                                <a href="<?= $gpxFile ?>" class="btn btn-success btn-lg w-100" download>
                                     <i class="fas fa-download me-2"></i> Descargar GPX
                                 </a>
-                                <p class="text-muted mt-2 small">
-                                    <i class="fas fa-info-circle"></i> Archivo compatible con la mayoría de navegadores GPS y apps de navegación
+                                <p class="text-muted mt-2 small text-center">
+                                    <i class="fas fa-info-circle"></i> Compatible con la mayoría de navegadores GPS
                                 </p>
                             </div>
                         <?php else: ?>
@@ -470,9 +1031,9 @@ paypal.Buttons({
                             </div>
                         <?php endif; ?>
                     <?php else: ?>
-                        <div class="alert alert-warning">
-                            Debes <a href="../users/login.php" class="text-decoration-underline">iniciar sesión</a> para <?= $esPremium ? 'comprar' : 'descargar' ?>
-                        </div>
+<div class="alert alert-warning">
+    Debes <a href="#" onclick="loginAndReturn(); return false;" class="alert-link">iniciar sesión</a> para <?= $esPremium ? 'comprar' : 'descargar' ?>
+</div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -490,7 +1051,8 @@ try {
 
 if(!empty($imagenes_galeria)):
 ?>
-<!-- Galería de Imágenes - Versión Optimizada -->
+
+<!-- Galería de Imágenes - Versión Optimizada para Móviles -->
 <div class="card mb-4 border-0 shadow-sm">
     <div class="card-body p-0">
         <div class="card-header bg-primary text-white">
@@ -498,251 +1060,99 @@ if(!empty($imagenes_galeria)):
         </div>
         <div class="p-4">
             <!-- Slideshow Container -->
-            <div class="simple-slideshow position-relative">
-                <div class="slideshow-wrapper" style="overflow: hidden; border-radius: 8px; position: relative; height: 60vh; min-height: 300px; max-height: 500px; background: #f8f9fa;">
-                    <div class="slides-container" id="slidesContainer" style="display: flex; height: 100%;">
+            <div class="simple-slideshow position-relative" id="simpleSlideshow">
+                <div class="slideshow-wrapper" id="slideshowWrapper">
+                    <div class="slides-container" id="slidesContainer">
                         <?php foreach($imagenes_galeria as $index => $imagen): ?>
-                        <div class="slide" style="min-width: 100%; position: relative; display: flex; align-items: center; justify-content: center; background: #f8f9fa;">
+                        <div class="slide">
                             <img src="../<?= $imagen->imagen ?>" 
                                  alt="<?= $imagen->descripcion ?: 'Imagen de la ruta' ?>"
                                  class="slide-image"
-                                 style="max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block;">
+                                 data-index="<?= $index ?>"
+                                 draggable="false">
                             <?php if(!empty($imagen->descripcion)): ?>
-                            <div class="slide-caption" style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(0,0,0,0.8); color: white; padding: 12px; border-radius: 8px;">
+                            <div class="slide-caption">
                                 <p class="mb-0 text-center"><?= htmlspecialchars($imagen->descripcion) ?></p>
                             </div>
                             <?php endif; ?>
                         </div>
                         <?php endforeach; ?>
                     </div>
-                </div>
 
-                <!-- Controles de navegación (solo desktop) -->
-                <button class="slide-btn prev-btn d-none d-md-block" onclick="changeSlide(-1)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: rgba(128, 0, 0, 0.8); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 10;">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="slide-btn next-btn d-none d-md-block" onclick="changeSlide(1)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: rgba(128, 0, 0, 0.8); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 10;">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-                
-                <!-- Botón de pantalla completa (solo móvil) -->
-                <button class="fullscreen-btn d-md-none" onclick="toggleFullscreen()" style="position: absolute; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); border: none; color: white; width: 40px; height: 40px; border-radius: 8px; font-size: 16px; cursor: pointer; z-index: 15; display: flex; align-items: center; justify-content: center;">
-                    <i class="fas fa-expand" id="fullscreenIcon"></i>
-                </button>
-                
-                <!-- Controles en pantalla completa -->
-                <div class="fullscreen-controls" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 25;">
-                    <button class="fs-control-btn" onclick="changeSlide(-1)" style="background: rgba(0, 0, 0, 0.7); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; margin: 0 10px;">
+                    <!-- Controles de zoom (solo móvil) -->
+                    <div class="zoom-controls d-md-none">
+                        <button class="zoom-btn" onclick="zoomOut()" title="Alejar">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="zoom-btn" onclick="zoomIn()" title="Acercar">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <!-- Indicador de zoom -->
+                    <div class="zoom-indicator" id="zoomIndicator">100%</div>
+
+                    <!-- Controles de navegación (desktop) -->
+                    <button class="slide-btn prev-btn d-none d-md-block" onclick="changeSlide(-1)" style="position: absolute; left: 15px; top: 50%; transform: translateY(-50%); background: rgba(128, 0, 0, 0.8); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 20;">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <button class="fs-control-btn" onclick="toggleFullscreen()" style="background: rgba(0, 0, 0, 0.7); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; margin: 0 10px;">
-                        <i class="fas fa-compress"></i>
-                    </button>
-                    <button class="fs-control-btn" onclick="changeSlide(1)" style="background: rgba(0, 0, 0, 0.7); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; margin: 0 10px;">
+                    <button class="slide-btn next-btn d-none d-md-block" onclick="changeSlide(1)" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); background: rgba(128, 0, 0, 0.8); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 20;">
                         <i class="fas fa-chevron-right"></i>
                     </button>
-                </div>
+                    
+                    <!-- Botón de pantalla completa -->
+                    <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Pantalla completa">
+                        <i class="fas fa-expand" id="fullscreenIcon"></i>
+                    </button>
+                    
+                    <!-- Controles en pantalla completa -->
+                    <div class="fullscreen-controls">
+                        <button class="fs-control-btn" onclick="changeSlide(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="fs-control-btn" onclick="resetZoom()" title="Resetear zoom">
+                            <i class="fas fa-search-minus"></i>
+                        </button>
+                        <button class="fs-control-btn" onclick="toggleFullscreen()">
+                            <i class="fas fa-compress"></i>
+                        </button>
+                        <button class="fs-control-btn" onclick="changeSlide(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
 
-                <!-- Indicadores minimalistas -->
-                <div class="slide-indicators text-center" style="position: absolute; bottom: 10px; left: 0; right: 0; z-index: 20;">
-                    <?php foreach($imagenes_galeria as $index => $imagen): ?>
-                    <span class="indicator-dot <?= $index === 0 ? 'active' : '' ?>" 
-                          style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: <?= $index === 0 ? '#fff' : 'rgba(255,255,255,0.5)' ?>; margin: 0 4px; box-shadow: 0 0 3px rgba(0,0,0,0.5);">
-                    </span>
-                    <?php endforeach; ?>
+                    <!-- Indicadores -->
+                    <div class="slide-indicators">
+                        <?php foreach($imagenes_galeria as $index => $imagen): ?>
+                        <span class="indicator-dot <?= $index === 0 ? 'active' : '' ?>" 
+                              onclick="goToSlide(<?= $index ?>)"
+                              data-index="<?= $index ?>">
+                        </span>
+                        <?php endforeach; ?>
+                    </div>
                 </div>
             </div>
             
             <!-- Texto de ayuda para móviles -->
-            <p class="text-muted text-center mt-2 d-md-none" style="font-size: 12px;">
-                <i class="fas fa-hand-point-up"></i> Desliza para cambiar foto • Doble tap o <i class="fas fa-expand"></i> para pantalla completa
+            <p class="help-text d-md-none">
+                <i class="fas fa-hand-point-up"></i> Desliza para cambiar • Pellizca para zoom • <i class="fas fa-expand"></i> para pantalla completa
             </p>
         </div>
     </div>
 </div>
 
-<style>
-/* Estilos simplificados para el slideshow */
-.simple-slideshow {
-    max-width: 100%;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-}
-
-.slideshow-wrapper {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    cursor: grab;
-    touch-action: pan-y;
-}
-
-.slideshow-wrapper:active {
-    cursor: grabbing;
-}
-
-.slides-container {
-    transition: none !important; /* Sin animaciones */
-}
-
-.slide {
-    height: 100%;
-}
-
-.slide-image {
-    pointer-events: none;
-}
-
-.slide-btn {
-    opacity: 0.8;
-}
-
-.slide-btn:hover {
-    opacity: 1;
-    background: #800000 !important;
-}
-
-.indicator-dot {
-    pointer-events: none;
-    border: 1px solid rgba(0,0,0,0.2);
-}
-
-/* Estilos para pantalla completa */
-.fullscreen-btn {
-    transition: opacity 0.3s;
-}
-
-.fullscreen-btn:active {
-    transform: scale(0.95);
-}
-
-.fs-control-btn {
-    transition: all 0.3s;
-}
-
-.fs-control-btn:active {
-    transform: scale(0.9);
-}
-
-/* Modo pantalla completa */
-.simple-slideshow:fullscreen,
-.simple-slideshow:-webkit-full-screen,
-.simple-slideshow:-moz-full-screen {
-    background: #000;
-}
-
-.simple-slideshow:fullscreen .slideshow-wrapper,
-.simple-slideshow:-webkit-full-screen .slideshow-wrapper,
-.simple-slideshow:-moz-full-screen .slideshow-wrapper {
-    height: 100vh !important;
-    max-height: none !important;
-    border-radius: 0 !important;
-}
-
-.simple-slideshow:fullscreen .slide,
-.simple-slideshow:-webkit-full-screen .slide,
-.simple-slideshow:-moz-full-screen .slide {
-    background: #000 !important;
-}
-
-.simple-slideshow:fullscreen .fullscreen-btn,
-.simple-slideshow:-webkit-full-screen .fullscreen-btn,
-.simple-slideshow:-moz-full-screen .fullscreen-btn {
-    display: none !important;
-}
-
-.simple-slideshow:fullscreen .fullscreen-controls,
-.simple-slideshow:-webkit-full-screen .fullscreen-controls,
-.simple-slideshow:-moz-full-screen .fullscreen-controls {
-    display: flex !important;
-}
-
-.simple-slideshow:fullscreen .slide-caption,
-.simple-slideshow:-webkit-full-screen .slide-caption,
-.simple-slideshow:-moz-full-screen .slide-caption {
-    bottom: 100px !important;
-}
-
-.simple-slideshow:fullscreen .slide-indicators,
-.simple-slideshow:-webkit-full-screen .slide-indicators,
-.simple-slideshow:-moz-full-screen .slide-indicators {
-    bottom: 20px !important;
-}
-
-.simple-slideshow:fullscreen .indicator-dot,
-.simple-slideshow:-webkit-full-screen .indicator-dot,
-.simple-slideshow:-moz-full-screen .indicator-dot {
-    width: 12px !important;
-    height: 12px !important;
-    margin: 0 6px !important;
-    box-shadow: 0 0 8px rgba(0,0,0,0.8) !important;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .slideshow-wrapper {
-        height: 50vh !important;
-        min-height: 250px !important;
-        max-height: 400px !important;
-    }
-    
-    .slide-caption {
-        bottom: 30px !important;
-        font-size: 13px !important;
-    }
-    
-    .indicator-dot {
-        width: 10px !important;
-        height: 10px !important;
-        margin: 0 5px !important;
-    }
-    
-    .fullscreen-btn {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 14px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .slideshow-wrapper {
-        height: 40vh !important;
-        min-height: 200px !important;
-        max-height: 300px !important;
-    }
-    
-    .slide-caption {
-        bottom: 35px !important;
-        font-size: 12px !important;
-        padding: 8px !important;
-    }
-    
-    .slide-indicators {
-        bottom: 15px !important;
-    }
-    
-    .indicator-dot {
-        width: 10px !important;
-        height: 10px !important;
-        margin: 0 4px !important;
-    }
-    
-    .fullscreen-btn {
-        width: 35px !important;
-        height: 35px !important;
-        font-size: 13px !important;
-        top: 10px !important;
-        right: 10px !important;
-    }
-}
-</style>
-
 <script>
+// Variables globales
 let currentSlide = 0;
 const totalSlides = <?= count($imagenes_galeria) ?>;
 let isFullscreen = false;
 
-// Variables para el touch
+// Variables para zoom
+let currentZoom = 1;
+let maxZoom = 3;
+let minZoom = 1;
+
+// Variables para touch y gestos
 let touchStartX = 0;
 let touchEndX = 0;
 let isDragging = false;
@@ -750,50 +1160,26 @@ let startPos = 0;
 let currentTranslate = 0;
 let prevTranslate = 0;
 
+// Variables para pinch zoom
+let initialDistance = 0;
+let initialZoom = 1;
+let isPinching = false;
+
+// Variables para pan (desplazar imagen con zoom)
+let isPanning = false;
+let startPanX = 0;
+let startPanY = 0;
+let currentPanX = 0;
+let currentPanY = 0;
+
 const slidesContainer = document.getElementById('slidesContainer');
+const slideshowWrapper = document.getElementById('slideshowWrapper');
+const simpleSlideshow = document.getElementById('simpleSlideshow');
 
-// Función para pantalla completa
-function toggleFullscreen() {
-    const slideshow = document.querySelector('.simple-slideshow');
-    
-    if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement) {
-        // Entrar en pantalla completa
-        if (slideshow.requestFullscreen) {
-            slideshow.requestFullscreen();
-        } else if (slideshow.webkitRequestFullscreen) {
-            slideshow.webkitRequestFullscreen();
-        } else if (slideshow.mozRequestFullScreen) {
-            slideshow.mozRequestFullScreen();
-        }
-        isFullscreen = true;
-    } else {
-        // Salir de pantalla completa
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        } else if (document.mozCancelFullScreen) {
-            document.mozCancelFullScreen();
-        }
-        isFullscreen = false;
-    }
-}
-
-// Detectar cambios en pantalla completa
-document.addEventListener('fullscreenchange', handleFullscreenChange);
-document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-
-function handleFullscreenChange() {
-    const icon = document.getElementById('fullscreenIcon');
-    if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement) {
-        if (icon) icon.className = 'fas fa-compress';
-    } else {
-        if (icon) icon.className = 'fas fa-expand';
-    }
-}
+// ===== FUNCIONES DE NAVEGACIÓN =====
 
 function changeSlide(direction) {
+    resetZoom();
     currentSlide += direction;
     
     if (currentSlide >= totalSlides) {
@@ -805,114 +1191,374 @@ function changeSlide(direction) {
     updateSlideshow();
 }
 
+function goToSlide(index) {
+    resetZoom();
+    currentSlide = index;
+    updateSlideshow();
+}
+
 function updateSlideshow() {
-    // Mover las slides sin transición
     const translateX = -currentSlide * 100;
     slidesContainer.style.transform = `translateX(${translateX}%)`;
     
     // Actualizar indicadores
     document.querySelectorAll('.indicator-dot').forEach((dot, index) => {
-        if (index === currentSlide) {
-            dot.style.background = '#fff';
-            dot.style.boxShadow = '0 0 5px rgba(0,0,0,0.8)';
-        } else {
-            dot.style.background = 'rgba(255,255,255,0.5)';
-            dot.style.boxShadow = '0 0 3px rgba(0,0,0,0.5)';
-        }
+        dot.classList.toggle('active', index === currentSlide);
     });
 }
 
-// Touch events para móviles
-function handleTouchStart(e) {
-    touchStartX = e.touches[0].clientX;
-    isDragging = true;
-    startPos = e.touches[0].clientX;
-    prevTranslate = -currentSlide * 100;
+// ===== FUNCIONES DE ZOOM =====
+
+function getCurrentImage() {
+    return document.querySelector(`.slide-image[data-index="${currentSlide}"]`);
 }
 
-function handleTouchMove(e) {
-    if (!isDragging) return;
+function updateZoom(zoom, panX = 0, panY = 0) {
+    const img = getCurrentImage();
+    if (!img) return;
     
-    const currentPosition = e.touches[0].clientX;
-    const diff = currentPosition - startPos;
-    const percentageMoved = (diff / slidesContainer.offsetWidth) * 100;
+    currentZoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+    currentPanX = panX;
+    currentPanY = panY;
     
-    currentTranslate = prevTranslate + percentageMoved;
+    img.style.transform = `scale(${currentZoom}) translate(${currentPanX}px, ${currentPanY}px)`;
     
-    slidesContainer.style.transform = `translateX(${currentTranslate}%)`;
-}
-
-function handleTouchEnd(e) {
-    isDragging = false;
-    touchEndX = e.changedTouches[0].clientX;
-    
-    const swipeThreshold = 50; // píxeles mínimos para considerar un swipe
-    const diff = touchStartX - touchEndX;
-    
-    if (Math.abs(diff) > swipeThreshold) {
-        if (diff > 0) {
-            // Swipe izquierda - siguiente imagen
-            currentSlide++;
-            if (currentSlide >= totalSlides) {
-                currentSlide = 0; // Volver al principio
-            }
-        } else {
-            // Swipe derecha - imagen anterior
-            currentSlide--;
-            if (currentSlide < 0) {
-                currentSlide = totalSlides - 1; // Ir a la última
-            }
-        }
+    // Mostrar indicador de zoom
+    const indicator = document.getElementById('zoomIndicator');
+    if (currentZoom > 1.1) {
+        indicator.style.display = 'block';
+        indicator.textContent = Math.round(currentZoom * 100) + '%';
+    } else {
+        indicator.style.display = 'none';
     }
     
-    updateSlideshow();
+    // Cambiar cursor
+    if (currentZoom > 1.1) {
+        img.style.cursor = 'grab';
+    } else {
+        img.style.cursor = 'default';
+    }
 }
 
-// Event listeners
-slidesContainer.addEventListener('touchstart', handleTouchStart, { passive: true });
-slidesContainer.addEventListener('touchmove', handleTouchMove, { passive: true });
+function zoomIn() {
+    updateZoom(currentZoom + 0.3);
+}
+
+function zoomOut() {
+    if (currentZoom > 1.1) {
+        updateZoom(currentZoom - 0.3);
+    } else {
+        resetZoom();
+    }
+}
+
+function resetZoom() {
+    currentZoom = 1;
+    currentPanX = 0;
+    currentPanY = 0;
+    updateZoom(1, 0, 0);
+}
+
+// ===== PANTALLA COMPLETA CORREGIDA =====
+
+function toggleFullscreen() {
+    if (!isFullscreen) {
+        enterFullscreen();
+    } else {
+        exitFullscreen();
+    }
+}
+
+function enterFullscreen() {
+    // Guardar posición actual del scroll
+    const scrollY = window.scrollY;
+    document.documentElement.style.setProperty('--scroll-y', scrollY + 'px');
+    
+    // Activar modo pantalla completa
+    simpleSlideshow.classList.add('fullscreen-mode');
+    document.body.classList.add('fullscreen-active');
+    
+    // Fijar posición del body para evitar saltos
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+    
+    isFullscreen = true;
+    document.getElementById('fullscreenIcon').className = 'fas fa-compress';
+    
+    // Resetear zoom al entrar en pantalla completa
+    resetZoom();
+}
+
+function exitFullscreen() {
+    // Desactivar modo pantalla completa
+    simpleSlideshow.classList.remove('fullscreen-mode');
+    document.body.classList.remove('fullscreen-active');
+    
+    // Restaurar scroll y posición
+    const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    
+    // Restaurar posición del scroll
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    
+    isFullscreen = false;
+    document.getElementById('fullscreenIcon').className = 'fas fa-expand';
+    
+    // Resetear zoom al salir de pantalla completa
+    resetZoom();
+}
+
+// ===== EVENTOS TÁCTILES =====
+
+// Calcular distancia entre dos puntos (para pinch)
+function getDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+// Touch start
+function handleTouchStart(e) {
+    if (e.touches.length === 2) {
+        // Pinch zoom
+        isPinching = true;
+        initialDistance = getDistance(e.touches);
+        initialZoom = currentZoom;
+        return;
+    }
+    
+    if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        
+        if (currentZoom > 1.1) {
+            // Pan mode (desplazar imagen con zoom)
+            isPanning = true;
+            startPanX = touch.clientX - currentPanX;
+            startPanY = touch.clientY - currentPanY;
+            getCurrentImage().style.cursor = 'grabbing';
+        } else {
+            // Slide mode (cambiar imagen)
+            isDragging = true;
+            touchStartX = touch.clientX;
+            startPos = touch.clientX;
+            prevTranslate = -currentSlide * 100;
+        }
+    }
+}
+
+// Touch move
+function handleTouchMove(e) {
+    e.preventDefault();
+    
+    if (isPinching && e.touches.length === 2) {
+        // Pinch zoom
+        const distance = getDistance(e.touches);
+        const scale = distance / initialDistance;
+        updateZoom(initialZoom * scale);
+        return;
+    }
+    
+    if (isPanning && e.touches.length === 1 && currentZoom > 1.1) {
+        // Pan image
+        const touch = e.touches[0];
+        currentPanX = touch.clientX - startPanX;
+        currentPanY = touch.clientY - startPanY;
+        
+        // Limitar el pan para no sacar demasiado la imagen
+        const maxPan = 100;
+        currentPanX = Math.max(-maxPan, Math.min(maxPan, currentPanX));
+        currentPanY = Math.max(-maxPan, Math.min(maxPan, currentPanY));
+        
+        updateZoom(currentZoom, currentPanX, currentPanY);
+        return;
+    }
+    
+    if (isDragging && e.touches.length === 1 && currentZoom <= 1.1) {
+        // Slide change
+        const currentPosition = e.touches[0].clientX;
+        const diff = currentPosition - startPos;
+        const percentageMoved = (diff / slidesContainer.offsetWidth) * 100;
+        
+        currentTranslate = prevTranslate + percentageMoved;
+        slidesContainer.style.transform = `translateX(${currentTranslate}%)`;
+    }
+}
+
+// Touch end
+function handleTouchEnd(e) {
+    if (isPinching) {
+        isPinching = false;
+        return;
+    }
+    
+    if (isPanning) {
+        isPanning = false;
+        getCurrentImage().style.cursor = 'grab';
+        return;
+    }
+    
+    if (isDragging) {
+        isDragging = false;
+        touchEndX = e.changedTouches[0].clientX;
+        
+        const swipeThreshold = 50;
+        const diff = touchStartX - touchEndX;
+        
+        if (Math.abs(diff) > swipeThreshold) {
+            if (diff > 0) {
+                changeSlide(1);
+            } else {
+                changeSlide(-1);
+            }
+        } else {
+            updateSlideshow();
+        }
+    }
+}
+
+// Doble tap para zoom
+let lastTap = 0;
+function handleDoubleTap(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    
+    if (tapLength < 300 && tapLength > 0) {
+        e.preventDefault();
+        
+        if (currentZoom > 1.1) {
+            resetZoom();
+        } else {
+            updateZoom(2);
+        }
+    }
+    lastTap = currentTime;
+}
+
+// ===== EVENT LISTENERS =====
+
+// Touch events
+slidesContainer.addEventListener('touchstart', handleTouchStart, { passive: false });
+slidesContainer.addEventListener('touchmove', handleTouchMove, { passive: false });
 slidesContainer.addEventListener('touchend', handleTouchEnd, { passive: true });
+slidesContainer.addEventListener('touchend', handleDoubleTap, { passive: false });
 
-// Prevenir el comportamiento por defecto del drag en desktop
-slidesContainer.addEventListener('mousedown', (e) => e.preventDefault());
+// Mouse events para desktop
+slidesContainer.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    if (currentZoom > 1.1) {
+        isPanning = true;
+        startPanX = e.clientX - currentPanX;
+        startPanY = e.clientY - currentPanY;
+        getCurrentImage().style.cursor = 'grabbing';
+    }
+});
 
-// Navegación con teclado (solo desktop)
-document.addEventListener('keydown', function(e) {
+document.addEventListener('mousemove', (e) => {
+    if (isPanning && currentZoom > 1.1) {
+        currentPanX = e.clientX - startPanX;
+        currentPanY = e.clientY - startPanY;
+        updateZoom(currentZoom, currentPanX, currentPanY);
+    }
+});
+
+document.addEventListener('mouseup', () => {
+    if (isPanning) {
+        isPanning = false;
+        const img = getCurrentImage();
+        if (img) img.style.cursor = 'grab';
+    }
+});
+
+// Wheel zoom para desktop
+slidesContainer.addEventListener('wheel', (e) => {
+    if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.2 : 0.2;
+        updateZoom(currentZoom + delta);
+    }
+});
+
+// Navegación con teclado
+document.addEventListener('keydown', (e) => {
     if (e.keyCode === 37) { // Flecha izquierda
         changeSlide(-1);
     } else if (e.keyCode === 39) { // Flecha derecha
         changeSlide(1);
-    } else if (e.keyCode === 27 && isFullscreen) { // ESC en pantalla completa
-        toggleFullscreen();
+    } else if (e.keyCode === 27) { // ESC
+        if (isFullscreen) {
+            exitFullscreen();
+        } else if (currentZoom > 1.1) {
+            resetZoom();
+        }
+    } else if (e.keyCode === 187 || e.keyCode === 107) { // + 
+        zoomIn();
+    } else if (e.keyCode === 189 || e.keyCode === 109) { // -
+        zoomOut();
     }
 });
 
-// Doble tap para pantalla completa en móviles
-let lastTap = 0;
-slidesContainer.addEventListener('touchend', function(e) {
-    const currentTime = new Date().getTime();
-    const tapLength = currentTime - lastTap;
-    if (tapLength < 300 && tapLength > 0) {
+// Detectar cambio de orientación y resize
+window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+        resetZoom();
+        updateSlideshow();
+    }, 300);
+});
+
+window.addEventListener('resize', () => {
+    if (isFullscreen) {
+        resetZoom();
+    }
+});
+
+// Prevenir zoom del navegador y otros gestos
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+
+// Prevenir pull-to-refresh en pantalla completa
+document.addEventListener('touchmove', (e) => {
+    if (isFullscreen) {
         e.preventDefault();
-        toggleFullscreen();
     }
-    lastTap = currentTime;
+}, { passive: false });
+
+// Detectar cuando la página se vuelve visible (para reajustar)
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && isFullscreen) {
+        setTimeout(() => {
+            resetZoom();
+            updateSlideshow();
+        }, 100);
+    }
 });
+
+// Inicializar
+updateSlideshow();
 </script>
-<?php endif; ?>
 
+<?php endif; //FIN DE GALERIA ?>
 
- <!-- DEBUG: Información visible solo para testing -->
+<script>
+// Función para guardar la ubicación actual y hacer login
+function loginAndReturn() {
+    // Guardar la URL actual completa incluyendo parámetros
+    sessionStorage.setItem('returnAfterLogin', window.location.href);
+    // Ir a la página de login
+    window.location.href = '../users/login.php';
+}
 
-    <!-- <div style="background: #f0f0f0; padding: 20px; margin: 20px 0; border: 1px solid #ccc;">
-        <h3>Debug Info:</h3>
-        <p><strong>Título:</strong> <?php //echo $titulo; ?></p>
-        <p><strong>Descripción:</strong> <?php //echo $descripcion; ?></p>
-        <p><strong>Imagen URL:</strong> <a href="<?php //echo $imagen_url; ?>" target="_blank"><?php //echo $imagen_url; ?></a></p>
-        <p><strong>Página URL:</strong> <?php //echo $url_actual; ?></p>
-        <p><strong>Image exists:</strong> <?php //echo file_exists($imagen_limpia) ? 'YES' : 'NO'; ?></p>
-    </div> -->
-
-
+// Función para registro con retorno
+function registerAndReturn() {
+    // Guardar la URL actual completa incluyendo parámetros  
+    sessionStorage.setItem('returnAfterLogin', window.location.href);
+    // Ir a la página de registro
+    window.location.href = '../users/join.php';
+}
+</script>
 
 <?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>

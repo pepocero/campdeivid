@@ -1546,3 +1546,615 @@ h1, h2, h3 {
         padding: 20px;
     }
 }
+
+/* SECCION COMO FUNCIONA */
+.process {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding: 80px 0;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #800000;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 60px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.process-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.process-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+}
+
+.process-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.process-card.featured {
+    border-color: #800000;
+    transform: scale(1.02);
+}
+
+.process-card.premium {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, #fff 0%, #fffbf0 100%);
+}
+
+.process-card.premium::before {
+    content: "RECOMENDADO";
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    background: #ffd700;
+    color: #800000;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.process-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.process-header i {
+    font-size: 3rem;
+    color: #800000;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.process-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+.process-card p {
+    color: #6c757d;
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+.process-option h4 {
+    color: #800000;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+.process-option ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+.process-option li {
+    padding: 8px 0;
+    color: #555;
+    position: relative;
+    padding-left: 25px;
+}
+
+.process-option li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.price-tag {
+    background: linear-gradient(45deg, #800000, #a00000);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 25px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+}
+
+.price-tag.free {
+    background: linear-gradient(45deg, #28a745, #34ce57);
+}
+
+.process-note {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    border-left: 4px solid #800000;
+}
+
+.process-note p {
+    margin-bottom: 15px;
+    color: #555;
+    font-style: italic;
+}
+
+.process-note i {
+    color: #800000;
+    margin-right: 8px;
+}
+
+.btn {
+    background: #800000;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: #a00000;
+    transform: translateY(-2px);
+    color: white;
+    text-decoration: none;
+}
+
+.process-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    border-top: 4px solid #800000;
+}
+
+.info-card h4 {
+    color: #800000;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+}
+
+.info-card i {
+    margin-right: 8px;
+    font-size: 1.2rem;
+}
+
+.info-card p {
+    color: #6c757d;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .process {
+        padding: 60px 0;
+    }
+    
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .process-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .process-card {
+        padding: 25px;
+    }
+    
+    .process-card.featured {
+        transform: none;
+    }
+    
+    .process-header i {
+        font-size: 2.5rem;
+    }
+    
+    .process-info {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .process-card {
+        padding: 20px;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1rem;
+        margin-bottom: 40px;
+    }
+}
+
+/* Fin Sección Cómo Funciona */
+
+/*SLIDESHOW*/
+.simple-slideshow {
+    max-width: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.slideshow-wrapper {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    cursor: grab;
+    touch-action: pan-y;
+}
+
+.slideshow-wrapper:active {
+    cursor: grabbing;
+}
+
+.slides-container {
+    transition: none !important; /* Sin animaciones */
+}
+
+.slide {
+    height: 100%;
+}
+
+.slide-image {
+    pointer-events: none;
+}
+
+.slide-btn {
+    opacity: 0.8;
+}
+
+.slide-btn:hover {
+    opacity: 1;
+    background: #800000 !important;
+}
+
+.indicator-dot {
+    pointer-events: none;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+
+/* Estilos para pantalla completa */
+.fullscreen-btn {
+    transition: opacity 0.3s;
+}
+
+.fullscreen-btn:active {
+    transform: scale(0.95);
+}
+
+.fs-control-btn {
+    transition: all 0.3s;
+}
+
+.fs-control-btn:active {
+    transform: scale(0.9);
+}
+
+/* Modo pantalla completa */
+.simple-slideshow:fullscreen,
+.simple-slideshow:-webkit-full-screen,
+.simple-slideshow:-moz-full-screen {
+    background: #000;
+}
+
+.simple-slideshow:fullscreen .slideshow-wrapper,
+.simple-slideshow:-webkit-full-screen .slideshow-wrapper,
+.simple-slideshow:-moz-full-screen .slideshow-wrapper {
+    height: 100vh !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+}
+
+.simple-slideshow:fullscreen .slide,
+.simple-slideshow:-webkit-full-screen .slide,
+.simple-slideshow:-moz-full-screen .slide {
+    background: #000 !important;
+}
+
+.simple-slideshow:fullscreen .fullscreen-btn,
+.simple-slideshow:-webkit-full-screen .fullscreen-btn,
+.simple-slideshow:-moz-full-screen .fullscreen-btn {
+    display: none !important;
+}
+
+.simple-slideshow:fullscreen .fullscreen-controls,
+.simple-slideshow:-webkit-full-screen .fullscreen-controls,
+.simple-slideshow:-moz-full-screen .fullscreen-controls {
+    display: flex !important;
+}
+
+.simple-slideshow:fullscreen .slide-caption,
+.simple-slideshow:-webkit-full-screen .slide-caption,
+.simple-slideshow:-moz-full-screen .slide-caption {
+    bottom: 100px !important;
+}
+
+.simple-slideshow:fullscreen .slide-indicators,
+.simple-slideshow:-webkit-full-screen .slide-indicators,
+.simple-slideshow:-moz-full-screen .slide-indicators {
+    bottom: 20px !important;
+}
+
+.simple-slideshow:fullscreen .indicator-dot,
+.simple-slideshow:-webkit-full-screen .indicator-dot,
+.simple-slideshow:-moz-full-screen .indicator-dot {
+    width: 12px !important;
+    height: 12px !important;
+    margin: 0 6px !important;
+    box-shadow: 0 0 8px rgba(0,0,0,0.8) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .slideshow-wrapper {
+        height: 50vh !important;
+        min-height: 250px !important;
+        max-height: 400px !important;
+    }
+    
+    .slide-caption {
+        bottom: 30px !important;
+        font-size: 13px !important;
+    }
+    
+    .indicator-dot {
+        width: 10px !important;
+        height: 10px !important;
+        margin: 0 5px !important;
+    }
+    
+    .fullscreen-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .slideshow-wrapper {
+        height: 40vh !important;
+        min-height: 200px !important;
+        max-height: 300px !important;
+    }
+    
+    .slide-caption {
+        bottom: 35px !important;
+        font-size: 12px !important;
+        padding: 8px !important;
+    }
+    
+    .slide-indicators {
+        bottom: 15px !important;
+    }
+    
+    .indicator-dot {
+        width: 10px !important;
+        height: 10px !important;
+        margin: 0 4px !important;
+    }
+    
+    .fullscreen-btn {
+        width: 35px !important;
+        height: 35px !important;
+        font-size: 13px !important;
+        top: 10px !important;
+        right: 10px !important;
+    }
+}
+
+/*ESTILOS PARA LAS OFERTAS Y LOS BADGES*/
+/* Estilos generales basados en la paleta granate */
+:root {
+    --granate-base: #800000;
+    --granate-hover: #990000;
+    --granate-alert-text: #B30000;
+    --granate-alert-bg: #FFE5E5;
+    --granate-alert-border: #FF9999;
+    --granate-dark: #660000;
+    --granate-light: #FFCCCC;
+}
+
+.card-header.bg-primary {
+    background-color: var(--granate-base) !important;
+    border-bottom: 3px solid var(--granate-dark);
+}
+
+.btn-primary {
+    background-color: var(--granate-base);
+    border-color: var(--granate-dark);
+}
+
+.btn-primary:hover {
+    background-color: var(--granate-hover);
+    border-color: var(--granate-dark);
+}
+
+/* Mejoras específicas para la tarjeta lateral */
+.card.sticky-top {
+    border: 1px solid var(--granate-alert-border);
+    box-shadow: 0 6px 12px rgba(128, 0, 0, 0.15) !important;
+}
+
+/* Estilos para los badges */
+.badge.bg-info {
+    background-color: #0d6efd !important;
+}
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+}
+.badge.bg-danger {
+    background-color: var(--granate-base) !important;
+}
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Mejoras para las alertas */
+.alert {
+    border-left: 4px solid;
+}
+.alert-danger {
+    background-color: var(--granate-alert-bg);
+    border-color: var(--granate-alert-text);
+    color: var(--granate-alert-text);
+}
+.alert-warning {
+    background-color: #FFF3CD;
+    border-color: #FFC107;
+    color: #856404;
+}
+
+/* Estilo para los puntos destacados */
+.card.h-100 {
+    transition: all 0.3s ease;
+    border: 1px solid var(--granate-alert-border);
+}
+.card.h-100:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(128, 0, 0, 0.2);
+}
+
+/* Mejoras en los checkboxes */
+.form-check-input:checked {
+    background-color: var(--granate-base);
+    border-color: var(--granate-dark);
+}
+
+.form-check-input:disabled {
+    opacity: 0.5;
+}
+
+/* Estilo para el precio total */
+h3.text-primary {
+    color: var(--granate-base) !important;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+/* Efecto hover para botones */
+.btn-lg {
+    transition: all 0.3s ease;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(128, 0, 0, 0.3);
+}
+
+/* Mejoras en la imagen principal */
+.card-img-top {
+    border-bottom: 3px solid var(--granate-base);
+}
+
+/* Estilo para la información de ruta gratuita */
+.free-route-info {
+    background-color: rgba(25, 135, 84, 0.1);
+    border-left: 4px solid #198754;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.free-route-info h5 {
+    color: #198754;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.download-btn-container {
+    text-align: center;
+    margin-top: 15px;
+}
+
+/* ✅ NUEVOS ESTILOS PARA OFERTAS */
+.precio-oferta-container {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%);
+    border: 2px solid #ffeaa7;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(255, 193, 7, 0.1);
+}
+
+.precio-original {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.precio-con-descuento {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.badge-descuento {
+    background: linear-gradient(45deg, #dc3545, #ff6b6b);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+.ahorro-info {
+    color: #198754;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

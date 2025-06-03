@@ -35,6 +35,196 @@ try {
 
 <!-- CSS adicional para ofertas MUY LLAMATIVAS -->
 <style>
+/* CSS para el mensaje de registro */
+.registro-banner {
+    background: linear-gradient(135deg, #820f2f 0%, #a01140 100%);
+    color: white;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 30px rgba(130, 15, 47, 0.3);
+}
+
+.registro-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="1" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23pattern)"/></svg>');
+    opacity: 0.3;
+}
+
+.registro-content {
+    position: relative;
+    z-index: 1;
+    padding: 2rem;
+}
+
+.registro-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: #ff6b00;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.registro-titulo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.registro-texto {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+.registro-beneficios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.beneficio-item {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+    font-size: 0.9rem;
+}
+
+.beneficio-item i {
+    margin-right: 0.5rem;
+    color: #ff6b00;
+}
+
+.registro-botones {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-registro {
+    background: linear-gradient(45deg, #ff6b00, #ff8533);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-registro:hover {
+    color: white;
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 0, 0.6);
+}
+
+.btn-login {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-login:hover {
+    color: white;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.tiempo-registro {
+    background: linear-gradient(45deg, #ff6b00, #820f2f);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0 0 1rem 0;
+    animation: pulse-tiempo 2s infinite;
+    width: 20%;
+    display: inline-block;
+    text-align: center;
+    min-width: 150px;
+}
+
+@keyframes pulse-tiempo {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .registro-content {
+        padding: 1.5rem;
+        text-align: center;
+    }
+    
+    .registro-titulo {
+        font-size: 1.5rem;
+    }
+    
+    .registro-texto {
+        font-size: 1rem;
+    }
+    
+    .registro-beneficios {
+        justify-content: center;
+    }
+    
+    .registro-botones {
+        justify-content: center;
+    }
+    
+    .btn-registro, .btn-login {
+        flex: 1;
+        min-width: 140px;
+        justify-content: center;
+    }
+    
+    .tiempo-registro {
+        width: auto;
+        min-width: 120px;
+        margin: 0 auto 1rem auto;
+    }
+}
+
+/* Responsive para móviles muy pequeños */
+@media (max-width: 480px) {
+    .tiempo-registro {
+        width: 80%;
+        max-width: 200px;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
 .precio-container {
     display: flex;
     flex-direction: column;
@@ -333,7 +523,8 @@ try {
 }
 </style>
 
-<div class="container mt-4">
+
+    
     <div class="row">
         <div class="col-12">
             <h1 class="text-center mb-4">Explorar Rutas Disponibles</h1>

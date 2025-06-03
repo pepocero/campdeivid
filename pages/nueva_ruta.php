@@ -3,19 +3,51 @@ require_once '../users/init.php';
 require_once $abs_us_root.$us_url_root.'users/includes/template/prep.php';
 if (!securePage($_SERVER['PHP_SELF'])){die();}
 
-// Añadir campo tiene_extras si no existe en la tabla
-try {
-    $db->query("SHOW COLUMNS FROM aa_rutas LIKE 'tiene_extras'");
-    if($db->count() === 0) {
-        $db->query("ALTER TABLE aa_rutas ADD COLUMN tiene_extras TINYINT(1) NOT NULL DEFAULT 0");
-    }
-    $db->query("SHOW COLUMNS FROM aa_compras LIKE 'opcion_extras'");
-    if($db->count() === 0) {
-        $db->query("ALTER TABLE aa_compras ADD COLUMN opcion_extras TINYINT(1) NOT NULL DEFAULT 0");
-    }
-} catch (Exception $e) {
-    // Ignorar errores
-}
+// ===== TIPOS DE PAISAJES REALISTAS PARA ESPAÑA =====
+$tipos_paisajes = [
+    // PAISAJES MONTAÑOSOS Y COMBINACIONES
+    'Montañas y bosques' => 'Montañas y bosques',
+    'Montañas y valles' => 'Montañas y valles', 
+    'Montañas y lagos' => 'Montañas y lagos',
+    'Sierra y bosques mediterráneos' => 'Sierra y bosques mediterráneos',
+    'Alta montaña y prados' => 'Alta montaña y prados',
+    'Cordillera cantábrica' => 'Cordillera cantábrica',
+    'Pirineos y valles' => 'Pirineos y valles',
+    
+    // PAISAJES COSTEROS Y COMBINACIONES  
+    'Costa y acantilados' => 'Costa y acantilados',
+    'Costa y playas vírgenes' => 'Costa y playas vírgenes',
+    'Costa mediterránea' => 'Costa mediterránea',
+    'Costa atlántica' => 'Costa atlántica',
+    'Rías y acantilados' => 'Rías y acantilados',
+    'Costa y dunas' => 'Costa y dunas',
+    
+    // PAISAJES DESÉRTICOS Y ÁRIDOS
+    'Desierto y badlands' => 'Desierto y badlands',
+    'Estepa y llanuras' => 'Estepa y llanuras', 
+    'Paisaje volcánico árido' => 'Paisaje volcánico árido',
+    'Mesetas y barrancos' => 'Mesetas y barrancos',
+    'Cañones y ramblas' => 'Cañones y ramblas',
+    
+    // PAISAJES DE BOSQUES Y VALLES
+    'Bosques atlánticos' => 'Bosques atlánticos',
+    'Bosques mediterráneos' => 'Bosques mediterráneos',
+    'Hayedos y montaña' => 'Hayedos y montaña',
+    'Pinares y sierra' => 'Pinares y sierra',
+    'Valle y viñedos' => 'Valle y viñedos',
+    'Valle y cerezos' => 'Valle y cerezos',
+    'Dehesas y encinas' => 'Dehesas y encinas',
+    
+    // PAISAJES MIXTOS Y SINGULARES
+    'Campo y pueblos blancos' => 'Campo y pueblos blancos',
+    'Llanuras cerealistas' => 'Llanuras cerealistas',
+    'Humedales y marismas' => 'Humedales y marismas',
+    'Volcánico y laurisilva' => 'Volcánico y laurisilva',
+    'Karst y dolinas' => 'Karst y dolinas',
+    'Ruta jacobea histórica' => 'Ruta jacobea histórica',
+    'Transpirenaica' => 'Transpirenaica',
+    'Alpujarra granadina' => 'Alpujarra granadina'
+];
 
 if(!hasPerm([2,4], $user->data()->id)) {
     Session::flash('error', 'Acceso denegado');
@@ -42,6 +74,29 @@ $mostrar_formulario = false;
 try {
     $db = DB::getInstance();
     
+    // ✅ MOVIDO AQUÍ: Añadir campos si no existen en la tabla (DESPUÉS de instanciar $db)
+    try {
+        $db->query("SHOW COLUMNS FROM aa_rutas LIKE 'tiene_extras'");
+        if($db->count() === 0) {
+            $db->query("ALTER TABLE aa_rutas ADD COLUMN tiene_extras TINYINT(1) NOT NULL DEFAULT 0");
+        }
+        $db->query("SHOW COLUMNS FROM aa_compras LIKE 'opcion_extras'");
+        if($db->count() === 0) {
+            $db->query("ALTER TABLE aa_compras ADD COLUMN opcion_extras TINYINT(1) NOT NULL DEFAULT 0");
+        }
+        // Verificar si existen los campos de ofertas
+        $db->query("SHOW COLUMNS FROM aa_rutas LIKE 'en_oferta'");
+        if($db->count() === 0) {
+            $db->query("ALTER TABLE aa_rutas ADD COLUMN en_oferta TINYINT(1) NOT NULL DEFAULT 0");
+        }
+        $db->query("SHOW COLUMNS FROM aa_rutas LIKE 'porcentaje_oferta'");
+        if($db->count() === 0) {
+            $db->query("ALTER TABLE aa_rutas ADD COLUMN porcentaje_oferta DECIMAL(5,2) NOT NULL DEFAULT 0.00");
+        }
+    } catch (Exception $e) {
+        // Ignorar errores de BD si ya existen los campos
+    }
+    
     // Manejar acción de eliminar
     if(Input::get('action') && Input::get('id')) {
         $ruta_id = Input::get('id');
@@ -54,19 +109,21 @@ try {
             }
             
             // Eliminar archivos GPX
-            $base_filename = basename($ruta->gpx);
-            $gpx_base_name = pathinfo($base_filename, PATHINFO_FILENAME);
-            $gpx_extension = pathinfo($base_filename, PATHINFO_EXTENSION);
-            
-            // Eliminar GPX base
-            if(!empty($ruta->gpx) && file_exists($abs_us_root.$us_url_root.$ruta->gpx)) {
-                unlink($abs_us_root.$us_url_root.$ruta->gpx);
-            }
-            
-            // Eliminar GPX extras
-            $extras_path = $upload_gpx_dir . 'extras/' . $gpx_base_name . '_extras.' . $gpx_extension;
-            if(file_exists($extras_path)) {
-                unlink($extras_path);
+            if(!empty($ruta->gpx)) {
+                $base_filename = basename($ruta->gpx);
+                $gpx_base_name = pathinfo($base_filename, PATHINFO_FILENAME);
+                $gpx_extension = pathinfo($base_filename, PATHINFO_EXTENSION);
+                
+                // Eliminar GPX base
+                if(file_exists($abs_us_root.$us_url_root.$ruta->gpx)) {
+                    unlink($abs_us_root.$us_url_root.$ruta->gpx);
+                }
+                
+                // Eliminar GPX extras
+                $extras_path = $upload_gpx_dir . 'extras/' . $gpx_base_name . '_extras.' . $gpx_extension;
+                if(file_exists($extras_path)) {
+                    unlink($extras_path);
+                }
             }
             
             $db->delete('aa_rutas', ['id' => $ruta_id]);
@@ -77,6 +134,8 @@ try {
 
     // Procesar envío de formulario para nueva ruta
     if(Input::exists()) {
+        echo "<div class='alert alert-info'>🔄 Procesando datos del formulario...</div>";
+        
         $required = [
             'nombre' => 'Nombre', 
             'descripcion' => 'Descripción',
@@ -85,7 +144,6 @@ try {
             'paisaje' => 'Paisaje',
             'distancia' => 'Distancia',
             'tiempo' => 'Tiempo estimado',
-            'destacados' => 'Puntos destacados',
             'descripcion_completa' => 'Descripción completa'
         ];
         
@@ -95,12 +153,21 @@ try {
         }
         
         foreach($required as $field => $name) {
-            if(empty(Input::get($field))) $errors[] = "$name es requerido";
+            if(empty(Input::get($field))) {
+                $errors[] = "$name es requerido";
+                echo "<div class='alert alert-warning'>❌ Campo faltante: $name</div>";
+            }
+        }
+
+        // Validar que el paisaje seleccionado esté en la lista permitida
+        if(!empty(Input::get('paisaje')) && !array_key_exists(Input::get('paisaje'), $tipos_paisajes)) {
+            $errors[] = "Tipo de paisaje inválido";
         }
 
         // Procesar imagen
         $imagen_path = '';
-        if($_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+        if(isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+            echo "<div class='alert alert-info'>📸 Procesando imagen...</div>";
             $file_ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
             if(in_array($file_ext, ['jpg','jpeg','png','webp'])) {
                 $new_filename = 'ruta_'.strtolower(str_replace(' ','_',Input::get('nombre'))).'.'.$file_ext;
@@ -108,14 +175,17 @@ try {
                 
                 if(move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path)) {
                     $imagen_path = '../images/rutas/'.$new_filename;
+                    echo "<div class='alert alert-success'>✅ Imagen subida: $new_filename</div>";
                 } else {
                     $errors[] = "Error subiendo imagen";
+                    echo "<div class='alert alert-danger'>❌ Error subiendo imagen</div>";
                 }
             } else {
                 $errors[] = "Formato de imagen inválido";
             }
         } else {
             $errors[] = "Se requiere una imagen";
+            echo "<div class='alert alert-warning'>❌ No se encontró imagen o hubo error en la subida</div>";
         }
 
         // Generar nombres de archivo base para GPX
@@ -124,7 +194,8 @@ try {
 
         // Procesar GPX BASE
         $gpx_path = '';
-        if($_FILES['gpx_base']['error'] === UPLOAD_ERR_OK) {
+        if(isset($_FILES['gpx_base']) && $_FILES['gpx_base']['error'] === UPLOAD_ERR_OK) {
+            echo "<div class='alert alert-info'>🗺️ Procesando GPX base...</div>";
             $file_ext = strtolower(pathinfo($_FILES['gpx_base']['name'], PATHINFO_EXTENSION));
             if($file_ext === 'gpx') {
                 $new_filename = $base_filename . '.gpx';
@@ -132,14 +203,17 @@ try {
                 
                 if(move_uploaded_file($_FILES['gpx_base']['tmp_name'], $target_path)) {
                     $gpx_path = 'gpx/base/'.$new_filename;
+                    echo "<div class='alert alert-success'>✅ GPX base subido: $new_filename</div>";
                 } else {
                     $errors[] = "Error subiendo GPX base";
+                    echo "<div class='alert alert-danger'>❌ Error subiendo GPX base</div>";
                 }
             } else {
                 $errors[] = "El archivo GPX debe ser .gpx";
             }
         } else {
             $errors[] = "Se requiere archivo GPX base";
+            echo "<div class='alert alert-warning'>❌ No se encontró GPX base o hubo error en la subida</div>";
         }
 
         // Para rutas premium, procesar el GPX de extras (opcional)
@@ -148,6 +222,7 @@ try {
         if($isPremium) {
             // Procesar GPX EXTRAS (si se subió un archivo)
             if(isset($_FILES['gpx_extras']) && $_FILES['gpx_extras']['error'] === UPLOAD_ERR_OK) {
+                echo "<div class='alert alert-info'>⭐ Procesando GPX extras...</div>";
                 $file_ext = strtolower(pathinfo($_FILES['gpx_extras']['name'], PATHINFO_EXTENSION));
                 if($file_ext === 'gpx') {
                     $new_filename = $base_filename . '_extras.gpx';
@@ -156,12 +231,16 @@ try {
                     if(move_uploaded_file($_FILES['gpx_extras']['tmp_name'], $target_path)) {
                         // Marcar que hay extras disponibles
                         $tiene_extras = 1;
+                        echo "<div class='alert alert-success'>✅ GPX extras subido: $new_filename</div>";
                     } else {
                         $errors[] = "Error subiendo GPX con extras";
+                        echo "<div class='alert alert-danger'>❌ Error subiendo GPX extras</div>";
                     }
                 } else {
                     $errors[] = "El archivo GPX de extras debe ser .gpx";
                 }
+            } else {
+                echo "<div class='alert alert-info'>ℹ️ No se subió GPX extras (opcional)</div>";
             }
         }
 
@@ -173,6 +252,8 @@ try {
 
         // Guardar nueva ruta
         if(empty($errors)) {
+            echo "<div class='alert alert-success'>💾 Guardando ruta en base de datos...</div>";
+            
             $fields = [
                 'nombre' => Input::get('nombre'),
                 'descripcion' => Input::get('descripcion'),
@@ -184,18 +265,40 @@ try {
                 'gpx' => $gpx_path,
                 'distancia' => Input::get('distancia'),
                 'tiempo' => Input::get('tiempo'),
-                'destacados' => Input::get('destacados'),
-                'descripcion_completa' => Input::get('descripcion_completa'),
-                'tiene_extras' => $tiene_extras
+                'destacados' => null,  // ✅ Campo BD presente pero no usado en formulario
+                'descripcion_completa' => strip_tags(Input::get('descripcion_completa'), '<p><br><strong><em><ul><ol><li><h1><h2><h3><h4><h5><h6><a>'), // ✅ Permitir solo etiquetas básicas
+                'tiene_extras' => $tiene_extras,
+                'en_oferta' => 0,  // ✅ NUEVO: Campo por defecto
+                'porcentaje_oferta' => 0.00  // ✅ NUEVO: Campo por defecto
             ];
             
-            $db->insert('aa_rutas', $fields);
-            $new_id = $db->lastId();
-            Session::flash('success', 'Ruta creada exitosamente');
-            Redirect::to('nueva_ruta.php');
+            // Debug: Mostrar los datos que se van a insertar
+            echo "<div class='alert alert-info'><strong>Datos a insertar:</strong><br>";
+            foreach($fields as $key => $value) {
+                echo "$key: $value<br>";
+            }
+            echo "</div>";
+            
+            try {
+                $result = $db->insert('aa_rutas', $fields);
+                $new_id = $db->lastId();
+                echo "<div class='alert alert-success'>✅ Ruta creada exitosamente con ID: $new_id</div>";
+                Session::flash('success', 'Ruta creada exitosamente');
+                echo "<script>setTimeout(function(){ window.location.href = 'nueva_ruta.php'; }, 3000);</script>";
+            } catch (Exception $e) {
+                echo "<div class='alert alert-danger'>❌ Error insertando en BD: " . $e->getMessage() . "</div>";
+                $errors[] = "Error de base de datos: " . $e->getMessage();
+            }
+        } else {
+            echo "<div class='alert alert-danger'><strong>Errores encontrados:</strong><br>";
+            foreach($errors as $error) {
+                echo "• $error<br>";
+            }
+            echo "</div>";
         }
     }
 } catch(Exception $e) {
+    echo "<div class='alert alert-danger'>❌ Error general: " . $e->getMessage() . "</div>";
     $errors[] = "Error: ".$e->getMessage();
 }
 
@@ -203,6 +306,45 @@ if(Input::get('new')) {
     $mostrar_formulario = true;
 }
 ?>
+
+<style>
+/* Estilos para el selector de paisajes */
+.paisaje-select {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-height: 45px;
+}
+.paisaje-select:focus {
+    box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    border-color: #20c997;
+    background: #fff;
+}
+.paisaje-select optgroup {
+    font-weight: bold;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 8px 0 4px 0;
+    margin: 4px 0;
+}
+.paisaje-select option {
+    padding: 6px 12px;
+    font-weight: normal;
+    color: #495057;
+    background-color: #fff;
+}
+.paisaje-select option:checked {
+    background-color: #28a745;
+    color: white;
+}
+.paisaje-icon {
+    margin-right: 8px;
+    color: #28a745;
+}
+</style>
 
 <div class="container py-4">
     
@@ -325,12 +467,66 @@ if(Input::get('new')) {
                         <!-- Columna Izquierda -->
                         <div class="form-group">
                             <label>Nombre de la Ruta</label>
-                            <input type="text" name="nombre" class="form-control" required>
+                            <input type="text" name="nombre" class="form-control" required value="<?= Input::get('nombre') ?? '' ?>">
                         </div>
                         
+                        <!-- ✅ NUEVO: Selector de Paisajes Realistas -->
                         <div class="form-group">
-                            <label>Paisaje</label>
-                            <input type="text" name="paisaje" class="form-control" required>
+                            <label for="paisaje"><i class="fas fa-mountain paisaje-icon"></i>Tipo de Paisaje</label>
+                            <select class="form-control paisaje-select" id="paisaje" name="paisaje" required>
+                                <option value="">-- Seleccionar tipo de paisaje --</option>
+                                
+                                <optgroup label="🏔️ Paisajes Montañosos">
+                                    <option value="Montañas y bosques" <?= Input::get('paisaje') == 'Montañas y bosques' ? 'selected' : '' ?>>Montañas y bosques</option>
+                                    <option value="Montañas y valles" <?= Input::get('paisaje') == 'Montañas y valles' ? 'selected' : '' ?>>Montañas y valles</option>
+                                    <option value="Montañas y lagos" <?= Input::get('paisaje') == 'Montañas y lagos' ? 'selected' : '' ?>>Montañas y lagos</option>
+                                    <option value="Sierra y bosques mediterráneos" <?= Input::get('paisaje') == 'Sierra y bosques mediterráneos' ? 'selected' : '' ?>>Sierra y bosques mediterráneos</option>
+                                    <option value="Alta montaña y prados" <?= Input::get('paisaje') == 'Alta montaña y prados' ? 'selected' : '' ?>>Alta montaña y prados</option>
+                                    <option value="Cordillera cantábrica" <?= Input::get('paisaje') == 'Cordillera cantábrica' ? 'selected' : '' ?>>Cordillera cantábrica</option>
+                                    <option value="Pirineos y valles" <?= Input::get('paisaje') == 'Pirineos y valles' ? 'selected' : '' ?>>Pirineos y valles</option>
+                                </optgroup>
+                                
+                                <optgroup label="🌊 Paisajes Costeros">
+                                    <option value="Costa y acantilados" <?= Input::get('paisaje') == 'Costa y acantilados' ? 'selected' : '' ?>>Costa y acantilados</option>
+                                    <option value="Costa y playas vírgenes" <?= Input::get('paisaje') == 'Costa y playas vírgenes' ? 'selected' : '' ?>>Costa y playas vírgenes</option>
+                                    <option value="Costa mediterránea" <?= Input::get('paisaje') == 'Costa mediterránea' ? 'selected' : '' ?>>Costa mediterránea</option>
+                                    <option value="Costa atlántica" <?= Input::get('paisaje') == 'Costa atlántica' ? 'selected' : '' ?>>Costa atlántica</option>
+                                    <option value="Rías y acantilados" <?= Input::get('paisaje') == 'Rías y acantilados' ? 'selected' : '' ?>>Rías y acantilados</option>
+                                    <option value="Costa y dunas" <?= Input::get('paisaje') == 'Costa y dunas' ? 'selected' : '' ?>>Costa y dunas</option>
+                                </optgroup>
+                                
+                                <optgroup label="🏜️ Paisajes Áridos y Desérticos">
+                                    <option value="Desierto y badlands" <?= Input::get('paisaje') == 'Desierto y badlands' ? 'selected' : '' ?>>Desierto y badlands</option>
+                                    <option value="Estepa y llanuras" <?= Input::get('paisaje') == 'Estepa y llanuras' ? 'selected' : '' ?>>Estepa y llanuras</option>
+                                    <option value="Paisaje volcánico árido" <?= Input::get('paisaje') == 'Paisaje volcánico árido' ? 'selected' : '' ?>>Paisaje volcánico árido</option>
+                                    <option value="Mesetas y barrancos" <?= Input::get('paisaje') == 'Mesetas y barrancos' ? 'selected' : '' ?>>Mesetas y barrancos</option>
+                                    <option value="Cañones y ramblas" <?= Input::get('paisaje') == 'Cañones y ramblas' ? 'selected' : '' ?>>Cañones y ramblas</option>
+                                </optgroup>
+                                
+                                <optgroup label="🌲 Bosques y Valles">
+                                    <option value="Bosques atlánticos" <?= Input::get('paisaje') == 'Bosques atlánticos' ? 'selected' : '' ?>>Bosques atlánticos</option>
+                                    <option value="Bosques mediterráneos" <?= Input::get('paisaje') == 'Bosques mediterráneos' ? 'selected' : '' ?>>Bosques mediterráneos</option>
+                                    <option value="Hayedos y montaña" <?= Input::get('paisaje') == 'Hayedos y montaña' ? 'selected' : '' ?>>Hayedos y montaña</option>
+                                    <option value="Pinares y sierra" <?= Input::get('paisaje') == 'Pinares y sierra' ? 'selected' : '' ?>>Pinares y sierra</option>
+                                    <option value="Valle y viñedos" <?= Input::get('paisaje') == 'Valle y viñedos' ? 'selected' : '' ?>>Valle y viñedos</option>
+                                    <option value="Valle y cerezos" <?= Input::get('paisaje') == 'Valle y cerezos' ? 'selected' : '' ?>>Valle y cerezos</option>
+                                    <option value="Dehesas y encinas" <?= Input::get('paisaje') == 'Dehesas y encinas' ? 'selected' : '' ?>>Dehesas y encinas</option>
+                                </optgroup>
+                                
+                                <optgroup label="🏞️ Paisajes Especiales">
+                                    <option value="Campo y pueblos blancos" <?= Input::get('paisaje') == 'Campo y pueblos blancos' ? 'selected' : '' ?>>Campo y pueblos blancos</option>
+                                    <option value="Llanuras cerealistas" <?= Input::get('paisaje') == 'Llanuras cerealistas' ? 'selected' : '' ?>>Llanuras cerealistas</option>
+                                    <option value="Humedales y marismas" <?= Input::get('paisaje') == 'Humedales y marismas' ? 'selected' : '' ?>>Humedales y marismas</option>
+                                    <option value="Volcánico y laurisilva" <?= Input::get('paisaje') == 'Volcánico y laurisilva' ? 'selected' : '' ?>>Volcánico y laurisilva</option>
+                                    <option value="Karst y dolinas" <?= Input::get('paisaje') == 'Karst y dolinas' ? 'selected' : '' ?>>Karst y dolinas</option>
+                                    <option value="Ruta jacobea histórica" <?= Input::get('paisaje') == 'Ruta jacobea histórica' ? 'selected' : '' ?>>Ruta jacobea histórica</option>
+                                    <option value="Transpirenaica" <?= Input::get('paisaje') == 'Transpirenaica' ? 'selected' : '' ?>>Transpirenaica</option>
+                                    <option value="Alpujarra granadina" <?= Input::get('paisaje') == 'Alpujarra granadina' ? 'selected' : '' ?>>Alpujarra granadina</option>
+                                </optgroup>
+                            </select>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Elige la combinación de paisajes que mejor describa tu ruta
+                            </small>
                         </div>
                         
                         <div class="form-group">
@@ -349,7 +545,7 @@ if(Input::get('new')) {
                             <label>Nivel de Dificultad</label>
                             <select name="nivel" class="form-control" required>
                                 <?php foreach(['Piloto nuevo','Domando Curvas','Maestro del Asfalto'] as $nivel): ?>
-                                <option value="<?= $nivel ?>"><?= $nivel ?></option>
+                                <option value="<?= $nivel ?>" <?= Input::get('nivel') == $nivel ? 'selected' : '' ?>><?= $nivel ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
@@ -357,8 +553,8 @@ if(Input::get('new')) {
                         <div class="form-group">
                             <label>Tipo de Plan</label>
                             <select name="plan" class="form-control" id="planSelect" required>
-                                <option value="Gratis">Gratis</option>
-                                <option value="Premium">Premium</option>
+                                <option value="Gratis" <?= Input::get('plan') == 'Gratis' ? 'selected' : '' ?>>Gratis</option>
+                                <option value="Premium" <?= Input::get('plan') == 'Premium' ? 'selected' : '' ?>>Premium</option>
                             </select>
                         </div>
                         
@@ -367,14 +563,14 @@ if(Input::get('new')) {
                                 <div class="form-group">
                                     <label>Precio (€)</label>
                                     <input type="number" name="precio" step="0.01" 
-                                           class="form-control" id="precioInput">
+                                           class="form-control" id="precioInput" value="<?= Input::get('precio') ?? '' ?>">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>Distancia (km)</label>
                                     <input type="number" name="distancia" step="0.1" 
-                                           class="form-control" required>
+                                           class="form-control" required value="<?= Input::get('distancia') ?? '' ?>">
                                 </div>
                             </div>
                         </div>
@@ -382,7 +578,7 @@ if(Input::get('new')) {
                         <div class="form-group">
                             <label>Tiempo Estimado</label>
                             <input type="text" name="tiempo" class="form-control"
-                                   placeholder="Ej: 3 horas" required>
+                                   placeholder="Ej: 3 horas" required value="<?= Input::get('tiempo') ?? '' ?>">
                         </div>
                     </div>
                 </div>
@@ -391,20 +587,13 @@ if(Input::get('new')) {
                 <div class="form-group">
                     <label>Descripción Corta (máx. 255 caracteres)</label>
                     <textarea name="descripcion" class="form-control" rows="2" 
-                              maxlength="255" required></textarea>
+                              maxlength="255" required><?= Input::get('descripcion') ?? '' ?></textarea>
                 </div>
                 
                 <div class="form-group">
                     <label>Descripción Completa</label>
                     <textarea id="editor" name="descripcion_completa" class="form-control" 
-                              rows="8" required></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label>Puntos Destacados (separar con comas)</label>
-                    <textarea name="destacados" id="puntosDestacados" class="form-control" rows="2" 
-                              required></textarea>
-                    <small class="form-text text-muted">Cada punto comenzará automáticamente con mayúscula</small>
+                              rows="8" required><?= Input::get('descripcion_completa') ?? '' ?></textarea>
                 </div>
 
                 <!-- Archivos GPX -->
@@ -489,7 +678,17 @@ if(Input::get('new')) {
             promotion: false,
             browser_spellcheck: true,
             contextmenu: false,
+            // ✅ MEJORADO: Configuración para mejor manejo de contenido
+            entity_encoding: 'raw',
+            keep_styles: false,
+            verify_html: false,
+            cleanup_on_startup: true,
+            trim_span_elements: true,
             setup: function(editor) {
+                // Sincronizar contenido automáticamente
+                editor.on('change keyup', function() {
+                    editor.save();
+                });
                 // Asegurarse de que TinyMCE guarde el contenido antes del envío
                 editor.on('change', function() {
                     tinymce.triggerSave();
@@ -543,67 +742,7 @@ if(Input::get('new')) {
             });
         });
         
-        // Formatear automáticamente los puntos destacados
-        var puntosDestacados = document.getElementById('puntosDestacados');
-        if (puntosDestacados) {
-            puntosDestacados.addEventListener('input', function() {
-                // Guardar la posición del cursor
-                var start = this.selectionStart;
-                var end = this.selectionEnd;
-                
-                // Obtener el texto actual
-                var textoOriginal = this.value;
-                var textoModificado = textoOriginal;
-                
-                // Eliminar puntos antes de comas
-                textoModificado = textoModificado.replace(/\.\s*,/g, ',');
-                
-                // Ajustar posición del cursor si se eliminaron puntos antes de la posición actual
-                var offset = 0;
-                for (var i = 0; i < start; i++) {
-                    // Si había un punto antes de una coma y se eliminó
-                    if (i < textoOriginal.length && i < textoModificado.length) {
-                        if (textoOriginal.charAt(i) === '.' && 
-                            i + 1 < textoOriginal.length && 
-                            textoOriginal.charAt(i + 1) === ',' &&
-                            textoModificado.charAt(i) === ',') {
-                            offset--;
-                        }
-                    }
-                }
-                
-                // Contar espacios que se añadirán después de comas sin espacios
-                var comaSinEspacio = /,([^\s])/g;
-                var match;
-                var espaciosAñadidos = 0;
-                
-                while ((match = comaSinEspacio.exec(textoModificado.slice(0, start + offset))) !== null) {
-                    if (match.index < start + offset) {
-                        espaciosAñadidos++;
-                    }
-                }
-                
-                // Capitalizar la primera letra después de cada coma
-                textoModificado = textoModificado.replace(/,\s*([a-z])/g, function(match, letter) {
-                    return ', ' + letter.toUpperCase();
-                });
-                
-                // Asegurar que hay un espacio después de cada coma
-                textoModificado = textoModificado.replace(/,([^\s])/g, ', $1');
-                
-                // Capitalizar la primera letra de todo el texto
-                if (textoModificado.length > 0) {
-                    textoModificado = textoModificado.charAt(0).toUpperCase() + textoModificado.slice(1);
-                }
-                
-                // Actualizar el valor del textarea
-                this.value = textoModificado;
-                
-                // Restaurar la posición del cursor, ajustando por los cambios realizados
-                this.selectionStart = start + offset + espaciosAñadidos;
-                this.selectionEnd = end + offset + espaciosAñadidos;
-            });
-        }
+        
         
         // Agregar ID al botón para poder referenciarlo
         document.querySelector('button[type="submit"]').id = 'btnGuardarRuta';

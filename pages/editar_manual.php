@@ -11,6 +11,52 @@ if(!hasPerm([2,4], $user->data()->id)) {
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
+// ===== TIPOS DE PAISAJES REALISTAS PARA ESPAÑA =====
+$tipos_paisajes = [
+    // PAISAJES MONTAÑOSOS Y COMBINACIONES
+    'Montañas y bosques' => 'Montañas y bosques',
+    'Montañas y valles' => 'Montañas y valles', 
+    'Montañas y lagos' => 'Montañas y lagos',
+    'Sierra y bosques mediterráneos' => 'Sierra y bosques mediterráneos',
+    'Alta montaña y prados' => 'Alta montaña y prados',
+    'Cordillera cantábrica' => 'Cordillera cantábrica',
+    'Pirineos y valles' => 'Pirineos y valles',
+    
+    // PAISAJES COSTEROS Y COMBINACIONES  
+    'Costa y acantilados' => 'Costa y acantilados',
+    'Costa y playas vírgenes' => 'Costa y playas vírgenes',
+    'Costa mediterránea' => 'Costa mediterránea',
+    'Costa atlántica' => 'Costa atlántica',
+    'Rías y acantilados' => 'Rías y acantilados',
+    'Costa y dunas' => 'Costa y dunas',
+    
+    // PAISAJES DESÉRTICOS Y ÁRIDOS
+    'Desierto y badlands' => 'Desierto y badlands',
+    'Estepa y llanuras' => 'Estepa y llanuras', 
+    'Paisaje volcánico árido' => 'Paisaje volcánico árido',
+    'Mesetas y barrancos' => 'Mesetas y barrancos',
+    'Cañones y ramblas' => 'Cañones y ramblas',
+    
+    // PAISAJES DE BOSQUES Y VALLES
+    'Bosques atlánticos' => 'Bosques atlánticos',
+    'Bosques mediterráneos' => 'Bosques mediterráneos',
+    'Hayedos y montaña' => 'Hayedos y montaña',
+    'Pinares y sierra' => 'Pinares y sierra',
+    'Valle y viñedos' => 'Valle y viñedos',
+    'Valle y cerezos' => 'Valle y cerezos',
+    'Dehesas y encinas' => 'Dehesas y encinas',
+    
+    // PAISAJES MIXTOS Y SINGULARES
+    'Campo y pueblos blancos' => 'Campo y pueblos blancos',
+    'Llanuras cerealistas' => 'Llanuras cerealistas',
+    'Humedales y marismas' => 'Humedales y marismas',
+    'Volcánico y laurisilva' => 'Volcánico y laurisilva',
+    'Karst y dolinas' => 'Karst y dolinas',
+    'Ruta jacobea histórica' => 'Ruta jacobea histórica',
+    'Transpirenaica' => 'Transpirenaica',
+    'Alpujarra granadina' => 'Alpujarra granadina'
+];
 ?>
 
 <!DOCTYPE html>
@@ -124,6 +170,43 @@ error_reporting(E_ALL);
             padding: 15px;
             margin: 20px 0;
         }
+        
+        /* Estilos para el selector de paisajes */
+        .paisaje-select {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            min-height: 45px;
+        }
+        .paisaje-select:focus {
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+            border-color: #20c997;
+            background: #fff;
+        }
+        .paisaje-select optgroup {
+            font-weight: bold;
+            color: #495057;
+            background-color: #f8f9fa;
+            padding: 8px 0 4px 0;
+            margin: 4px 0;
+        }
+        .paisaje-select option {
+            padding: 6px 12px;
+            font-weight: normal;
+            color: #495057;
+            background-color: #fff;
+        }
+        .paisaje-select option:checked {
+            background-color: #28a745;
+            color: white;
+        }
+        .paisaje-icon {
+            margin-right: 8px;
+            color: #28a745;
+        }
     </style>
 </head>
 <body>
@@ -163,6 +246,7 @@ error_reporting(E_ALL);
             echo "<h5>🔍 DEBUG - Verificando campos de oferta:</h5>";
             echo "<strong>Plan actual:</strong> <span style='background: yellow; padding: 2px 5px;'>{$ruta->plan}</span><br>";
             echo "<strong>Precio actual:</strong> {$ruta->precio}€<br>";
+            echo "<strong>Paisaje actual:</strong> <span style='background: lightgreen; padding: 2px 5px;'>{$ruta->paisaje}</span><br>";
             echo "<strong>Campos disponibles:</strong> ";
             $propiedades = get_object_vars($ruta);
             foreach($propiedades as $key => $value) {
@@ -182,14 +266,6 @@ error_reporting(E_ALL);
             } else {
                 echo "<strong>❌ Campo 'porcentaje_oferta' no existe</strong><br>";
             }
-            
-            echo "<strong>🎯 Problema detectado:</strong> ";
-            if($ruta->plan == 'Gratis') {
-                echo "<span style='background: red; color: white; padding: 2px 5px;'>La sección de ofertas está OCULTA porque el plan es 'Gratis'</span><br>";
-                echo "<strong>💡 Solución:</strong> Cambia el plan a 'Premium' para ver las ofertas, o usa el código corregido.<br>";
-            } else {
-                echo "<span style='background: green; color: white; padding: 2px 5px;'>El plan es Premium, la sección debería estar visible</span><br>";
-            }
             echo "</div>";
             
             // Configuración de directorios
@@ -202,137 +278,167 @@ error_reporting(E_ALL);
             if(isset($_POST['editar_submit'])) {
                 echo "<div class='status-message'><i class='fas fa-cog fa-spin'></i> Procesando datos del formulario...</div>";
                 
-                // Campos básicos a actualizar
-                $fields = [
-                    'nombre' => $_POST['nombre'],
-                    'descripcion' => $_POST['descripcion'],
-                    'nivel' => $_POST['nivel'],
-                    'plan' => $_POST['plan'],
-                    'paisaje' => $_POST['paisaje'],
-                    'precio' => $_POST['plan'] == 'Premium' ? $_POST['precio'] : 0,
-                    'distancia' => $_POST['distancia'],
-                    'tiempo' => $_POST['tiempo'],
-                    'destacados' => $_POST['destacados'],
-                    'descripcion_completa' => $_POST['descripcion_completa'],
-                    // Nuevos campos para ofertas
-                    'en_oferta' => isset($_POST['en_oferta']) ? 1 : 0,
-                    'porcentaje_oferta' => isset($_POST['en_oferta']) ? floatval($_POST['porcentaje_oferta']) : 0
-                ];
-                
-                echo "<div class='debug-section'>";
-                echo "<h5>📝 Datos a guardar:</h5>";
-                echo "<strong>en_oferta:</strong> " . $fields['en_oferta'] . "<br>";
-                echo "<strong>porcentaje_oferta:</strong> " . $fields['porcentaje_oferta'] . "<br>";
-                echo "</div>";
-                
-                // Procesar imagen si se subió una nueva
-                if(!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
-                    echo "<div class='status-message'><i class='fas fa-image'></i> Procesando nueva imagen...</div>";
-                    $file_ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
-                    if(in_array($file_ext, ['jpg','jpeg','png','webp'])) {
-                        $new_filename = 'ruta_'.strtolower(str_replace(' ','_',$_POST['nombre'])).'.'.$file_ext;
-                        $target_path = $upload_image_dir.$new_filename;
-                        // Eliminar imagen anterior si existe
-                           if(!empty($ruta->imagen) && file_exists($ruta->imagen)) {
-                                echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando imagen anterior: {$ruta->imagen}</div>";
-                                unlink($ruta->imagen);
-                            }
-                        // Mover archivo subido a la carpeta de imágenes
-                        if(move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path)) {
-                            echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Imagen subida correctamente: {$new_filename}</div>";                             
-                            $fields['imagen'] = '../images/rutas/'.$new_filename;
-                        } else {
-                            echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo imagen</div>";
-                        }
-                    } else {
-                        echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Formato de imagen inválido</div>";
-                    }
+                // Validar que el paisaje seleccionado esté en la lista permitida
+                if(!empty($_POST['paisaje']) && !array_key_exists($_POST['paisaje'], $tipos_paisajes)) {
+                    echo "<div class='alert alert-danger'>Tipo de paisaje inválido</div>";
                 } else {
-                    echo "<div class='status-message'><i class='fas fa-info-circle'></i> Manteniendo imagen actual</div>";
-                }
-                
-                // Generar nombre base para archivos GPX
-                $base_filename = 'ruta_'.strtolower(str_replace(' ','_',$_POST['nombre']));
-                
-                // Procesar GPX BASE si se subió uno nuevo
-                if(!empty($_FILES['gpx_base']['name']) && $_FILES['gpx_base']['error'] === UPLOAD_ERR_OK) {
-                    echo "<div class='status-message'><i class='fas fa-file-alt'></i> Procesando nuevo archivo GPX base...</div>";
-                    $file_ext = strtolower(pathinfo($_FILES['gpx_base']['name'], PATHINFO_EXTENSION));
-                    if($file_ext === 'gpx') {
-                        $new_filename = $base_filename . '.gpx';
-                        $target_path = $upload_gpx_dir . 'base/' . $new_filename;
-                        
-                        if(move_uploaded_file($_FILES['gpx_base']['tmp_name'], $target_path)) {
-                            echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX base subido correctamente: {$new_filename}</div>";
-                            
-                            // Eliminar GPX anterior si existe
-                            if(!empty($ruta->gpx) && file_exists($abs_us_root.$us_url_root.$ruta->gpx)) {
-                                echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando GPX anterior: {$ruta->gpx}</div>";
-                                unlink($abs_us_root.$us_url_root.$ruta->gpx);
-                            }
-                            
-                            $fields['gpx'] = 'gpx/base/'.$new_filename;
-                        } else {
-                            echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo GPX base</div>";
-                        }
-                    } else {
-                        echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> El archivo GPX debe ser .gpx</div>";
-                    }
-                } else {
-                    echo "<div class='status-message'><i class='fas fa-info-circle'></i> Manteniendo archivo GPX base actual</div>";
-                }
-                
-                // Marcar tiene_extras en base a la existencia del archivo
-                $tiene_extras = 0;
-                
-                // Procesar GPX EXTRAS si es Premium y se subió uno nuevo
-                if($_POST['plan'] == 'Premium') {
-                    echo "<div class='status-message'><i class='fas fa-star'></i> La ruta es Premium, verificando archivos extras...</div>";
+                    // Campos básicos a actualizar
+                    $fields = [
+                        'nombre' => $_POST['nombre'],
+                        'descripcion' => $_POST['descripcion'],
+                        'nivel' => $_POST['nivel'],
+                        'plan' => $_POST['plan'],
+                        'paisaje' => $_POST['paisaje'],
+                        'precio' => $_POST['plan'] == 'Premium' ? floatval($_POST['precio']) : 0,
+                        'distancia' => floatval($_POST['distancia']),
+                        'tiempo' => $_POST['tiempo'],
+                        'destacados' => NULL, // Campo obsoleto - siempre NULL
+                        'descripcion_completa' => $_POST['descripcion_completa'],
+                        // Nuevos campos para ofertas
+                        'en_oferta' => isset($_POST['en_oferta']) ? 1 : 0,
+                        'porcentaje_oferta' => isset($_POST['en_oferta']) ? floatval($_POST['porcentaje_oferta']) : 0
+                    ];
                     
-                    if(!empty($_FILES['gpx_extras']['name']) && $_FILES['gpx_extras']['error'] === UPLOAD_ERR_OK) {
-                        echo "<div class='status-message'><i class='fas fa-file-alt'></i> Procesando nuevo archivo GPX extras...</div>";
-                        $file_ext = strtolower(pathinfo($_FILES['gpx_extras']['name'], PATHINFO_EXTENSION));
+                    echo "<div class='debug-section'>";
+                    echo "<h5>📝 Datos a guardar:</h5>";
+                    echo "<strong>paisaje:</strong> " . $fields['paisaje'] . "<br>";
+                    echo "<strong>en_oferta:</strong> " . $fields['en_oferta'] . "<br>";
+                    echo "<strong>porcentaje_oferta:</strong> " . $fields['porcentaje_oferta'] . "<br>";
+                    echo "<strong>destacados:</strong> NULL (campo eliminado)<br>";
+                    echo "</div>";
+                    
+                    // Procesar imagen si se subió una nueva
+                    if(!empty($_FILES['imagen']['name']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
+                        echo "<div class='status-message'><i class='fas fa-image'></i> Procesando nueva imagen...</div>";
+                        $file_ext = strtolower(pathinfo($_FILES['imagen']['name'], PATHINFO_EXTENSION));
+                        if(in_array($file_ext, ['jpg','jpeg','png','webp'])) {
+                            $new_filename = 'ruta_'.strtolower(str_replace(' ','_',$_POST['nombre'])).'.'.$file_ext;
+                            $target_path = $upload_image_dir.$new_filename;
+                            // Eliminar imagen anterior si existe
+                            if(!empty($ruta->imagen) && file_exists($abs_us_root.$us_url_root.$ruta->imagen)) {
+                                echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando imagen anterior: " . basename($ruta->imagen) . "</div>";
+                                unlink($abs_us_root.$us_url_root.$ruta->imagen);
+                            }
+                            // Mover archivo subido a la carpeta de imágenes
+                            if(move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path)) {
+                                echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Imagen subida correctamente: {$new_filename}</div>";                             
+                                $fields['imagen'] = '../images/rutas/'.$new_filename;
+                            } else {
+                                echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo imagen</div>";
+                            }
+                        } else {
+                            echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Formato de imagen inválido</div>";
+                        }
+                    } else {
+                        echo "<div class='status-message'><i class='fas fa-info-circle'></i> Manteniendo imagen actual</div>";
+                    }
+                    
+                    // Generar nombre base para archivos GPX
+                    $base_filename = 'ruta_'.strtolower(str_replace(' ','_',$_POST['nombre']));
+                    
+                    // Procesar GPX BASE si se subió uno nuevo
+                    if(!empty($_FILES['gpx_base']['name']) && $_FILES['gpx_base']['error'] === UPLOAD_ERR_OK) {
+                        echo "<div class='status-message'><i class='fas fa-file-alt'></i> Procesando nuevo archivo GPX base...</div>";
+                        $file_ext = strtolower(pathinfo($_FILES['gpx_base']['name'], PATHINFO_EXTENSION));
                         if($file_ext === 'gpx') {
-                            $new_filename = $base_filename . '_extras.gpx';
-                            $target_path = $upload_gpx_dir . 'extras/' . $new_filename;
+                            $new_filename = $base_filename . '.gpx';
+                            $target_path = $upload_gpx_dir . 'base/' . $new_filename;
                             
-                            if(move_uploaded_file($_FILES['gpx_extras']['tmp_name'], $target_path)) {
-                                echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX extras subido correctamente: {$new_filename}</div>";
+                            // PRIMERO intentar subir el nuevo archivo
+                            if(move_uploaded_file($_FILES['gpx_base']['tmp_name'], $target_path)) {
+                                echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX base subido correctamente: {$new_filename}</div>";
+                                
+                                // SOLO DESPUÉS eliminar el anterior si es diferente al nuevo
+                                if(!empty($ruta->gpx) && $ruta->gpx !== 'gpx/base/'.$new_filename) {
+                                    $old_file_path = $abs_us_root.$us_url_root.$ruta->gpx;
+                                    if(file_exists($old_file_path)) {
+                                        echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando GPX anterior: " . basename($ruta->gpx) . "</div>";
+                                        unlink($old_file_path);
+                                    }
+                                }
+                                
+                                $fields['gpx'] = 'gpx/base/'.$new_filename;
+                            } else {
+                                echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo GPX base - manteniendo archivo actual</div>";
+                            }
+                        } else {
+                            echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> El archivo GPX debe ser .gpx</div>";
+                        }
+                    } else {
+                        echo "<div class='status-message'><i class='fas fa-info-circle'></i> Manteniendo archivo GPX base actual</div>";
+                    }
+                    
+                    // Marcar tiene_extras en base a la existencia del archivo
+                    $tiene_extras = 0;
+                    
+                    // Procesar GPX EXTRAS si es Premium y se subió uno nuevo
+                    if($_POST['plan'] == 'Premium') {
+                        echo "<div class='status-message'><i class='fas fa-star'></i> La ruta es Premium, verificando archivos extras...</div>";
+                        
+                        if(!empty($_FILES['gpx_extras']['name']) && $_FILES['gpx_extras']['error'] === UPLOAD_ERR_OK) {
+                            echo "<div class='status-message'><i class='fas fa-file-alt'></i> Procesando nuevo archivo GPX extras...</div>";
+                            $file_ext = strtolower(pathinfo($_FILES['gpx_extras']['name'], PATHINFO_EXTENSION));
+                            if($file_ext === 'gpx') {
+                                $new_filename = $base_filename . '_extras.gpx';
+                                $target_path = $upload_gpx_dir . 'extras/' . $new_filename;
+                                
+                                // PRIMERO intentar subir el nuevo archivo
+                                if(move_uploaded_file($_FILES['gpx_extras']['tmp_name'], $target_path)) {
+                                    echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX extras subido correctamente: {$new_filename}</div>";
+                                    $tiene_extras = 1;
+                                    
+                                    // SOLO DESPUÉS eliminar archivo extras anterior si es diferente
+                                    $gpx_base_filename = !empty($ruta->gpx) ? $ruta->gpx : '';
+                                    if(!empty($gpx_base_filename)) {
+                                        $old_base_filename = basename($gpx_base_filename);
+                                        $old_gpx_base_name = pathinfo($old_base_filename, PATHINFO_FILENAME);
+                                        $old_gpx_extension = pathinfo($old_base_filename, PATHINFO_EXTENSION);
+                                        $old_extras_filename = $old_gpx_base_name . '_extras.' . $old_gpx_extension;
+                                        
+                                        // Solo eliminar si el nombre del archivo anterior es diferente al nuevo
+                                        if($old_extras_filename !== $new_filename) {
+                                            $old_extras_path = $upload_gpx_dir . 'extras/' . $old_extras_filename;
+                                            if(file_exists($old_extras_path)) {
+                                                echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando GPX extras anterior: {$old_extras_filename}</div>";
+                                                unlink($old_extras_path);
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo GPX extras - manteniendo archivo actual</div>";
+                                }
+                            } else {
+                                echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> El archivo GPX extras debe ser .gpx</div>";
+                            }
+                        } else {
+                            // Verificar si ya existe un archivo de extras
+                            $gpx_base_filename = !empty($fields['gpx']) ? $fields['gpx'] : $ruta->gpx;
+                            $base_filename = basename($gpx_base_filename);
+                            $gpx_base_name = pathinfo($base_filename, PATHINFO_FILENAME);
+                            $gpx_extension = pathinfo($base_filename, PATHINFO_EXTENSION);
+                            $extras_path = $upload_gpx_dir . 'extras/' . $gpx_base_name . '_extras.' . $gpx_extension;
+                            
+                            if(file_exists($extras_path)) {
+                                echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX extras existente: {$gpx_base_name}_extras.{$gpx_extension}</div>";
                                 $tiene_extras = 1;
                             } else {
-                                echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> Error subiendo GPX extras</div>";
+                                echo "<div class='status-message'><i class='fas fa-info-circle'></i> No se encontró archivo GPX extras</div>";
                             }
-                        } else {
-                            echo "<div class='status-message status-error'><i class='fas fa-times-circle'></i> El archivo GPX extras debe ser .gpx</div>";
-                        }
-                    } else {
-                        // Verificar si ya existe un archivo de extras
-                        $gpx_base_filename = !empty($fields['gpx']) ? $fields['gpx'] : $ruta->gpx;
-                        $base_filename = basename($gpx_base_filename);
-                        $gpx_base_name = pathinfo($base_filename, PATHINFO_FILENAME);
-                        $gpx_extension = pathinfo($base_filename, PATHINFO_EXTENSION);
-                        $extras_path = $upload_gpx_dir . 'extras/' . $gpx_base_name . '_extras.' . $gpx_extension;
-                        
-                        if(file_exists($extras_path)) {
-                            echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Archivo GPX extras existente: {$gpx_base_name}_extras.{$gpx_extension}</div>";
-                            $tiene_extras = 1;
-                        } else {
-                            echo "<div class='status-message'><i class='fas fa-info-circle'></i> No se encontró archivo GPX extras</div>";
                         }
                     }
-                }
-                
-                // Actualizar campo tiene_extras
-                $fields['tiene_extras'] = $tiene_extras;
-                
-                // Actualizar en la base de datos
-                echo "<div class='status-message'><i class='fas fa-database'></i> Actualizando información en la base de datos...</div>";
-                $update = $db->update('aa_rutas', $ruta_id, $fields);
-                
-                if($update) {
-                    echo "<div class='alert alert-success text-center'><i class='fas fa-check-circle'></i> Ruta actualizada exitosamente</div>";
-                } else {
-                    echo "<div class='alert alert-danger text-center'><i class='fas fa-times-circle'></i> Error al actualizar la ruta</div>";
+                    
+                    // Actualizar campo tiene_extras
+                    $fields['tiene_extras'] = $tiene_extras;
+                    
+                    // Actualizar en la base de datos
+                    echo "<div class='status-message'><i class='fas fa-database'></i> Actualizando información en la base de datos...</div>";
+                    $update = $db->update('aa_rutas', $ruta_id, $fields);
+                    
+                    if($update) {
+                        echo "<div class='alert alert-success text-center'><i class='fas fa-check-circle'></i> Ruta actualizada exitosamente</div>";
+                    } else {
+                        echo "<div class='alert alert-danger text-center'><i class='fas fa-times-circle'></i> Error al actualizar la ruta</div>";
+                    }
                 }
                 
                 echo "<div class='text-center mt-4'><a href='nueva_ruta.php' class='btn btn-primary btn-action'><i class='fas fa-arrow-left'></i> Volver a la lista de rutas</a></div>";
@@ -352,7 +458,7 @@ error_reporting(E_ALL);
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="nombre">Nombre de la Ruta</label>
-                                        <input type="text" class="form-control" id="nombre" name="nombre" value="<?= $ruta->nombre ?>" required>
+                                        <input type="text" class="form-control" id="nombre" name="nombre" value="<?= htmlspecialchars($ruta->nombre) ?>" required>
                                     </div>
                                     
                                     <div class="form-group">
@@ -364,9 +470,63 @@ error_reporting(E_ALL);
                                         </select>
                                     </div>
                                     
+                                    <!-- ✅ NUEVO: Selector de Paisajes Realistas -->
                                     <div class="form-group">
-                                        <label for="paisaje">Paisaje</label>
-                                        <input type="text" class="form-control" id="paisaje" name="paisaje" value="<?= $ruta->paisaje ?>" required>
+                                        <label for="paisaje"><i class="fas fa-mountain"></i> Tipo de Paisaje</label>
+                                        <select class="form-control paisaje-select" id="paisaje" name="paisaje" required>
+                                            <option value="">-- Seleccionar tipo de paisaje --</option>
+                                            
+                                            <optgroup label="🏔️ Paisajes Montañosos">
+                                                <option value="Montañas y bosques" <?= ($ruta->paisaje == 'Montañas y bosques') ? 'selected' : '' ?>>Montañas y bosques</option>
+                                                <option value="Montañas y valles" <?= ($ruta->paisaje == 'Montañas y valles') ? 'selected' : '' ?>>Montañas y valles</option>
+                                                <option value="Montañas y lagos" <?= ($ruta->paisaje == 'Montañas y lagos') ? 'selected' : '' ?>>Montañas y lagos</option>
+                                                <option value="Sierra y bosques mediterráneos" <?= ($ruta->paisaje == 'Sierra y bosques mediterráneos') ? 'selected' : '' ?>>Sierra y bosques mediterráneos</option>
+                                                <option value="Alta montaña y prados" <?= ($ruta->paisaje == 'Alta montaña y prados') ? 'selected' : '' ?>>Alta montaña y prados</option>
+                                                <option value="Cordillera cantábrica" <?= ($ruta->paisaje == 'Cordillera cantábrica') ? 'selected' : '' ?>>Cordillera cantábrica</option>
+                                                <option value="Pirineos y valles" <?= ($ruta->paisaje == 'Pirineos y valles') ? 'selected' : '' ?>>Pirineos y valles</option>
+                                            </optgroup>
+                                            
+                                            <optgroup label="🌊 Paisajes Costeros">
+                                                <option value="Costa y acantilados" <?= ($ruta->paisaje == 'Costa y acantilados') ? 'selected' : '' ?>>Costa y acantilados</option>
+                                                <option value="Costa y playas vírgenes" <?= ($ruta->paisaje == 'Costa y playas vírgenes') ? 'selected' : '' ?>>Costa y playas vírgenes</option>
+                                                <option value="Costa mediterránea" <?= ($ruta->paisaje == 'Costa mediterránea') ? 'selected' : '' ?>>Costa mediterránea</option>
+                                                <option value="Costa atlántica" <?= ($ruta->paisaje == 'Costa atlántica') ? 'selected' : '' ?>>Costa atlántica</option>
+                                                <option value="Rías y acantilados" <?= ($ruta->paisaje == 'Rías y acantilados') ? 'selected' : '' ?>>Rías y acantilados</option>
+                                                <option value="Costa y dunas" <?= ($ruta->paisaje == 'Costa y dunas') ? 'selected' : '' ?>>Costa y dunas</option>
+                                            </optgroup>
+                                            
+                                            <optgroup label="🏜️ Paisajes Áridos y Desérticos">
+                                                <option value="Desierto y badlands" <?= ($ruta->paisaje == 'Desierto y badlands') ? 'selected' : '' ?>>Desierto y badlands</option>
+                                                <option value="Estepa y llanuras" <?= ($ruta->paisaje == 'Estepa y llanuras') ? 'selected' : '' ?>>Estepa y llanuras</option>
+                                                <option value="Paisaje volcánico árido" <?= ($ruta->paisaje == 'Paisaje volcánico árido') ? 'selected' : '' ?>>Paisaje volcánico árido</option>
+                                                <option value="Mesetas y barrancos" <?= ($ruta->paisaje == 'Mesetas y barrancos') ? 'selected' : '' ?>>Mesetas y barrancos</option>
+                                                <option value="Cañones y ramblas" <?= ($ruta->paisaje == 'Cañones y ramblas') ? 'selected' : '' ?>>Cañones y ramblas</option>
+                                            </optgroup>
+                                            
+                                            <optgroup label="🌲 Bosques y Valles">
+                                                <option value="Bosques atlánticos" <?= ($ruta->paisaje == 'Bosques atlánticos') ? 'selected' : '' ?>>Bosques atlánticos</option>
+                                                <option value="Bosques mediterráneos" <?= ($ruta->paisaje == 'Bosques mediterráneos') ? 'selected' : '' ?>>Bosques mediterráneos</option>
+                                                <option value="Hayedos y montaña" <?= ($ruta->paisaje == 'Hayedos y montaña') ? 'selected' : '' ?>>Hayedos y montaña</option>
+                                                <option value="Pinares y sierra" <?= ($ruta->paisaje == 'Pinares y sierra') ? 'selected' : '' ?>>Pinares y sierra</option>
+                                                <option value="Valle y viñedos" <?= ($ruta->paisaje == 'Valle y viñedos') ? 'selected' : '' ?>>Valle y viñedos</option>
+                                                <option value="Valle y cerezos" <?= ($ruta->paisaje == 'Valle y cerezos') ? 'selected' : '' ?>>Valle y cerezos</option>
+                                                <option value="Dehesas y encinas" <?= ($ruta->paisaje == 'Dehesas y encinas') ? 'selected' : '' ?>>Dehesas y encinas</option>
+                                            </optgroup>
+                                            
+                                            <optgroup label="🏞️ Paisajes Especiales">
+                                                <option value="Campo y pueblos blancos" <?= ($ruta->paisaje == 'Campo y pueblos blancos') ? 'selected' : '' ?>>Campo y pueblos blancos</option>
+                                                <option value="Llanuras cerealistas" <?= ($ruta->paisaje == 'Llanuras cerealistas') ? 'selected' : '' ?>>Llanuras cerealistas</option>
+                                                <option value="Humedales y marismas" <?= ($ruta->paisaje == 'Humedales y marismas') ? 'selected' : '' ?>>Humedales y marismas</option>
+                                                <option value="Volcánico y laurisilva" <?= ($ruta->paisaje == 'Volcánico y laurisilva') ? 'selected' : '' ?>>Volcánico y laurisilva</option>
+                                                <option value="Karst y dolinas" <?= ($ruta->paisaje == 'Karst y dolinas') ? 'selected' : '' ?>>Karst y dolinas</option>
+                                                <option value="Ruta jacobea histórica" <?= ($ruta->paisaje == 'Ruta jacobea histórica') ? 'selected' : '' ?>>Ruta jacobea histórica</option>
+                                                <option value="Transpirenaica" <?= ($ruta->paisaje == 'Transpirenaica') ? 'selected' : '' ?>>Transpirenaica</option>
+                                                <option value="Alpujarra granadina" <?= ($ruta->paisaje == 'Alpujarra granadina') ? 'selected' : '' ?>>Alpujarra granadina</option>
+                                            </optgroup>
+                                        </select>
+                                        <small class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i> Elige la combinación de paisajes que mejor describa tu ruta
+                                        </small>
                                     </div>
                                 </div>
                                 
@@ -394,7 +554,7 @@ error_reporting(E_ALL);
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label for="tiempo">Tiempo Estimado</label>
-                                                <input type="text" class="form-control" id="tiempo" name="tiempo" value="<?= $ruta->tiempo ?>" required>
+                                                <input type="text" class="form-control" id="tiempo" name="tiempo" value="<?= htmlspecialchars($ruta->tiempo) ?>" required>
                                             </div>
                                         </div>
                                     </div>
@@ -425,7 +585,7 @@ error_reporting(E_ALL);
                                             <label for="porcentaje_oferta"><i class="fas fa-percent"></i> Porcentaje de Descuento (%)</label>
                                             <input type="number" class="form-control" id="porcentaje_oferta" name="porcentaje_oferta" 
                                                    value="<?= property_exists($ruta, 'porcentaje_oferta') ? ($ruta->porcentaje_oferta ?? '0') : '0' ?>" 
-                                                   min="1" max="99" step="1">
+                                                   min="0" max="99" step="1">
                                             <small class="form-text text-muted">Entre 1% y 99%</small>
                                         </div>
                                     </div>
@@ -445,21 +605,17 @@ error_reporting(E_ALL);
                             <h5 class="section-header mt-4"><i class="fas fa-align-left"></i> Descripciones</h5>
                             <div class="form-group">
                                 <label for="descripcion">Descripción Corta</label>
-                                <textarea class="form-control" id="descripcion" name="descripcion" rows="2" maxlength="255" required><?= $ruta->descripcion ?></textarea>
+                                <textarea class="form-control" id="descripcion" name="descripcion" rows="2" maxlength="255" required><?= htmlspecialchars($ruta->descripcion) ?></textarea>
                                 <small class="form-text text-muted">Máximo 255 caracteres</small>
                             </div>
                             
                             <div class="form-group">
                                 <label for="editor"><i class="fas fa-edit"></i> Descripción Completa <small class="text-muted">(Editor TinyMCE)</small></label>
-                                <textarea class="form-control" id="editor" name="descripcion_completa" rows="12" required><?= htmlspecialchars($ruta->descripcion_completa) ?></textarea>
+                                <textarea class="form-control" id="editor" name="descripcion_completa" rows="12" required><?= $ruta->descripcion_completa ?? '' ?></textarea>
                                 <small class="form-text text-muted">Editor enriquecido con opciones de formato</small>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="destacados">Puntos Destacados</label>
-                                <textarea class="form-control" id="destacados" name="destacados" rows="2" required><?= $ruta->destacados ?></textarea>
-                                <small class="form-text text-muted">Separar con comas</small>
-                            </div>
+                            <!-- 🚫 ELIMINADO: Campo de puntos destacados -->
                             
                             <!-- Archivos -->
                             <h5 class="section-header mt-4"><i class="fas fa-file-upload"></i> Archivos</h5>
@@ -543,7 +699,7 @@ error_reporting(E_ALL);
                 
                 <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    console.log('🚀 Script iniciado - VERSIÓN CON TinyMCE');
+                    console.log('🚀 Script iniciado - VERSIÓN CON TinyMCE y Selector de Paisajes');
                     
                     // Inicializar TinyMCE
                     tinymce.init({
@@ -624,6 +780,10 @@ error_reporting(E_ALL);
                                 enOfertaCheck.disabled = true;
                                 porcentajeInput.disabled = true;
                                 enOfertaCheck.checked = false; // Desmarcar si no es premium
+                                // Resetear validación cuando no es premium
+                                porcentajeInput.removeAttribute('required');
+                                porcentajeInput.setAttribute('min', '0');
+                                porcentajeInput.value = '0';
                                 if(mensajeOferta) {
                                     mensajeOferta.className = 'alert alert-warning mb-3';
                                     textoMensaje.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Las ofertas solo están disponibles para rutas Premium. Cambia el plan a Premium para habilitar esta función.';
@@ -640,12 +800,22 @@ error_reporting(E_ALL);
                         // Si el checkbox está deshabilitado (plan no premium), ocultar porcentaje
                         if(enOfertaCheck.disabled) {
                             porcentajeGroup.style.display = 'none';
+                            // Resetear validación cuando está deshabilitado
+                            porcentajeInput.removeAttribute('required');
+                            porcentajeInput.setAttribute('min', '0');
                         } else {
                             // Si está habilitado, mostrar/ocultar según esté marcado
                             if(enOfertaCheck.checked) {
                                 porcentajeGroup.style.display = 'block';
+                                // Activar validación cuando está visible y habilitado
+                                porcentajeInput.setAttribute('min', '1');
+                                porcentajeInput.setAttribute('required', 'required');
                             } else {
                                 porcentajeGroup.style.display = 'none';
+                                // Quitar validación cuando está oculto
+                                porcentajeInput.removeAttribute('required');
+                                porcentajeInput.setAttribute('min', '0');
+                                porcentajeInput.value = '0'; // Resetear valor
                             }
                         }
                         actualizarPrecioPreview();
@@ -704,14 +874,30 @@ error_reporting(E_ALL);
                     // Sincronizar TinyMCE antes del envío del formulario
                     var form = document.querySelector('form');
                     if (form) {
-                        form.addEventListener('submit', function() {
+                        form.addEventListener('submit', function(e) {
+                            // Sincronizar TinyMCE
                             if (tinymce.get('editor')) {
                                 tinymce.get('editor').save();
+                            }
+                            
+                            // Validar campo de porcentaje si está visible
+                            if (enOfertaCheck.checked && !enOfertaCheck.disabled) {
+                                var porcentaje = parseFloat(porcentajeInput.value) || 0;
+                                if (porcentaje < 1 || porcentaje > 99) {
+                                    e.preventDefault();
+                                    alert('El porcentaje de descuento debe estar entre 1% y 99%');
+                                    porcentajeInput.focus();
+                                    return false;
+                                }
+                            } else {
+                                // Si no está visible, asegurar que el valor sea 0
+                                porcentajeInput.value = '0';
+                                porcentajeInput.removeAttribute('required');
                             }
                         });
                     }
                     
-                    console.log('✅ Script inicializado correctamente con TinyMCE');
+                    console.log('✅ Script inicializado correctamente con TinyMCE y Selector de Paisajes');
                 });
                 </script>
                 <?php

@@ -273,67 +273,109 @@ if(isset($user) && $user->isLoggedIn()){
 <section id="como-funciona" class="section process">
     <div class="container">
         <h2 class="section-title">¿Cómo Funciona Nuestro Sistema?</h2>
-        <p class="section-subtitle">Ofrecemos dos opciones flexibles para adaptarnos a tus necesidades</p>
+        <p class="section-subtitle">Tres opciones diseñadas para diferentes tipos de aventuras moteras</p>
         
         <div class="process-grid">
-            <!-- Compra Individual Modificada -->
+            <!-- Rutas Gratuitas -->
             <div class="process-card">
                 <div class="process-header">
-                    <i class="fas fa-route"></i>
-                    <h3>Rutas Personalizables</h3>
+                    <i class="fas fa-gift"></i>
+                    <h3>Rutas Gratuitas</h3>
                 </div>
-                <p>Adquiere rutas específicas y personalízalas según tus preferencias</p>
+                <p>Descarga directa de rutas básicas para empezar tu aventura</p>
                 
                 <div class="process-option">
-                    <h4>Características Principales:</h4>
+                    <h4>¿Qué Incluye?</h4>
                     <ul>
-                        <li>Descarga del archivo GPX de alta precisión</li>
-                        <li>Personaliza puntos de repostaje estratégicos</li>
-                        <li>Sugerencias de hoteles con mejores valoraciones</li>
-                        <li>Recomendaciones de restaurantes locales auténticos</li>
-                        <li>Puntos de interés y fotográficos destacados</li>
-                        <li>Asistencia básica para modificaciones de ruta</li>
+                        <li>Archivo GPX listo para usar</li>
+                        <li>Indicaciones básicas de la ruta</li>
+                        <li>Puntos de interés principales</li>
+                        <li>Recomendaciones generales</li>
+                        <li>Descarga inmediata</li>
                     </ul>
-                    <div class="price-tag">Precio por ruta: Desde 5€</div>
+                    <div class="price-tag free">100% Gratis</div>
                 </div>
                 
                 <div class="process-note">
-                    <p>¡Tú decides el nivel de detalle! Añade servicios extra a cualquier ruta</p>
+                    <p><i class="fas fa-download"></i> Perfectas para moteros que buscan rutas probadas sin complicaciones</p>
+                </div>
+            </div>
+
+            <!-- Rutas Premium -->
+            <div class="process-card featured">
+                <div class="process-header">
+                    <i class="fas fa-route"></i>
+                    <h3>Rutas Premium</h3>
+                </div>
+                <p>Rutas elaboradas con contenido detallado y recomendaciones expertas</p>
+                
+                <div class="process-option">
+                    <h4>Características Premium:</h4>
+                    <ul>
+                        <li>Archivo GPX de alta precisión</li>
+                        <li>Rutas más largas y elaboradas</li>
+                        <li>Recomendaciones de restaurantes locales</li>
+                        <li>Paradas de interés cultural e histórico</li>
+                        <li>Puntos fotográficos estratégicos</li>
+                        <li>Miradores con las mejores vistas</li>
+                        <li>Guía detallada de cada parada</li>
+                    </ul>
+                    <div class="price-tag">Desde 5€ por ruta</div>
+                </div>
+                
+                <div class="process-note">
+                    <p><i class="fas fa-star"></i> Rutas cuidadosamente diseñadas para una experiencia inolvidable</p>
                 </div>
             </div>
             
-            <!-- Nueva Planificación Personalizada -->
-            <div class="process-card featured">
+            <!-- Planificación Personalizada Premium -->
+            <div class="process-card premium">
                 <div class="process-header">
                     <i class="fas fa-concierge-bell"></i>
-                    <h3>Planificación Premium</h3>
+                    <h3>Planificación Personalizada</h3>
                 </div>
-                <p>Servicio completo para experiencias únicas</p>
+                <p>Servicio completo de planificación desde cero para tu viaje perfecto</p>
                 
                 <div class="process-option">
-                    <h4>Incluye todo de la versión básica más:</h4>
+                    <h4>Servicio Todo Incluido:</h4>
                     <ul>
                         <li>Diseño de ruta 100% personalizado</li>
-                        <li>Reserva gestionada de hoteles y restaurantes</li>
-                        <li>Coordinación de fechas específicas</li>
-                        <li>Asesoramiento fotográfico profesional</li>
-                        <li>Optimización de paradas técnicas</li>
-                        <li>Asistencia de emergencia en ruta</li>
-                        <li>Documentación de viaje personalizada</li>
+                        <li>Planificación de paradas de repostaje</li>
+                        <li>Reservas gestionadas de hoteles</li>
+                        <li>Reservas en restaurantes recomendados</li>
+                        <li>Selección de miradores y puntos fotográficos</li>
+                        <li>Gestión de seguro de viaje (opcional)</li>
+                        <li>Documento detallado con todas las indicaciones</li>
+                        <li>Solo tienes que repostar y seguir el GPX</li>
                     </ul>
-                    <div class="price-tag">Desde 90€/día (mínimo 2 días)</div>
+                    <div class="price-tag">Desde 90€/día (mín. 2 días)</div>
                 </div>
                 
                 <div class="process-note">
-                    <p><i class="fas fa-envelope"></i> Servicio gestionado via email con nuestro equipo de expertos</p>
+                    <p><i class="fas fa-envelope"></i> Gestionado vía email con respuesta rápida de nuestro equipo</p>
                     <a href="pages/contacto.php" class="btn btn-primary">Solicitar Presupuesto</a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="process-info">
+            <div class="info-card">
+                <h4><i class="fas fa-clock"></i> Respuesta Rápida</h4>
+                <p>Contestamos emails en menos de 24 horas para planificaciones personalizadas</p>
+            </div>
+            <div class="info-card">
+                <h4><i class="fas fa-shield-alt"></i> Calidad Garantizada</h4>
+                <p>Todas nuestras rutas están probadas y verificadas por moteros expertos</p>
+            </div>
+            <div class="info-card">
+                <h4><i class="fas fa-headset"></i> Soporte Continuo</h4>
+                <p>Asistencia durante tu viaje para resolver cualquier imprevisto</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Dificultad -->
 <!-- Dificultad -->
 <section class="section difficulty">
     <div class="container">
@@ -390,35 +432,7 @@ if(isset($user) && $user->isLoggedIn()){
     </div>
 </section>
 
-    <!-- Precios -->
-<section id="precios" class="section pricing">
-    <div class="container">
-        <h2 class="section-title">Planes y Precios</h2>
-        <div class="grid">
-            <div class="card pricing-card">
-                <h3>Rutas Básicas</h3>
-                <p class="price">Desde <span>5€</span>/ruta</p>
-                <ul>
-                    <li>GPX + Sugerencias básicas</li>
-                    <li>Personalización opcional</li>
-                    <li>Descarga inmediata</li>
-                </ul>
-                <a href="pages/rutas.php" class="btn btn-outline">Comprar</a>
-            </div>
-            <div class="card pricing-card featured">
-                <h3>Planificación Premium</h3>
-                <p class="price">Desde <span>90€</span>/día</p>
-                <ul>
-                    <li>Servicio completo personalizado</li>
-                    <li>Gestión de reservas incluida</li>
-                    <li>Asistencia 24/7 durante el viaje</li>
-                    <li>Documentación exclusiva</li>
-                </ul>
-                <a href="pages/contacto.php" class="btn btn-primary">Contactar</a>
-            </div>
-        </div>
-    </div>
-</section>
+
 
 
 <!-- Testimonios -->
