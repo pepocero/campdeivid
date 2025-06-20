@@ -16,6 +16,7 @@ error_reporting(E_ALL);
 $tipos_paisajes = [
     // PAISAJES MONTAÑOSOS Y COMBINACIONES
     'Montañas y bosques' => 'Montañas y bosques',
+    'Montañas y viñedos' => 'Montañas y viñedos',
     'Montañas y valles' => 'Montañas y valles', 
     'Montañas y lagos' => 'Montañas y lagos',
     'Sierra y bosques mediterráneos' => 'Sierra y bosques mediterráneos',
@@ -57,6 +58,8 @@ $tipos_paisajes = [
     'Transpirenaica' => 'Transpirenaica',
     'Alpujarra granadina' => 'Alpujarra granadina'
 ];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -240,33 +243,59 @@ $tipos_paisajes = [
             }
             
             echo "<div class='status-message status-success'><i class='fas fa-check-circle'></i> Ruta encontrada: <strong>{$ruta->nombre}</strong> (ID: {$ruta->id})</div>";
+
+            // ✅ GENERADOR DE OPCIONES DE TIEMPO (añadir esto al principio del archivo, después de los tipos_paisajes)
+$opciones_tiempo = [];
+for ($horas = 1; $horas <= 20; $horas++) {
+    // Hora exacta (ej: "1 hora", "2 horas")
+    if ($horas == 1) {
+        $opciones_tiempo[] = "1 hora";
+    } else {
+        $opciones_tiempo[] = "$horas horas";
+    }
+    
+    // Hora y media (ej: "1 hora 30 minutos", "2 horas 30 minutos")
+    if ($horas < 20) { // No agregar "20 horas 30 minutos"
+        if ($horas == 1) {
+            $opciones_tiempo[] = "1 hora 30 minutos";
+        } else {
+            $opciones_tiempo[] = "$horas horas 30 minutos";
+        }
+    }
+}
+
+// ✅ VERIFICAR SI EL TIEMPO ACTUAL ESTÁ EN LAS OPCIONES PREDEFINIDAS
+$tiempo_actual = isset($ruta->tiempo) ? trim($ruta->tiempo) : '';
+$tiempo_en_opciones = in_array($tiempo_actual, $opciones_tiempo);
+
+
             
-            // DEBUG: Verificar campos de oferta
-            echo "<div class='debug-section'>";
-            echo "<h5>🔍 DEBUG - Verificando campos de oferta:</h5>";
-            echo "<strong>Plan actual:</strong> <span style='background: yellow; padding: 2px 5px;'>{$ruta->plan}</span><br>";
-            echo "<strong>Precio actual:</strong> {$ruta->precio}€<br>";
-            echo "<strong>Paisaje actual:</strong> <span style='background: lightgreen; padding: 2px 5px;'>{$ruta->paisaje}</span><br>";
-            echo "<strong>Campos disponibles:</strong> ";
-            $propiedades = get_object_vars($ruta);
-            foreach($propiedades as $key => $value) {
-                $color = in_array($key, ['en_oferta', 'porcentaje_oferta']) ? 'color: red; font-weight: bold;' : '';
-                echo "<span style='$color'>$key</span>, ";
-            }
-            echo "<br>";
+            // // DEBUG: Verificar campos de oferta
+            // echo "<div class='debug-section'>";
+            // echo "<h5>🔍 DEBUG - Verificando campos de oferta:</h5>";
+            // echo "<strong>Plan actual:</strong> <span style='background: yellow; padding: 2px 5px;'>{$ruta->plan}</span><br>";
+            // echo "<strong>Precio actual:</strong> {$ruta->precio}€<br>";
+            // echo "<strong>Paisaje actual:</strong> <span style='background: lightgreen; padding: 2px 5px;'>{$ruta->paisaje}</span><br>";
+            // echo "<strong>Campos disponibles:</strong> ";
+            // $propiedades = get_object_vars($ruta);
+            // foreach($propiedades as $key => $value) {
+            //     $color = in_array($key, ['en_oferta', 'porcentaje_oferta']) ? 'color: red; font-weight: bold;' : '';
+            //     echo "<span style='$color'>$key</span>, ";
+            // }
+            // echo "<br>";
             
-            if (property_exists($ruta, 'en_oferta')) {
-                echo "<strong>✅ en_oferta:</strong> " . ($ruta->en_oferta ?? '0') . "<br>";
-            } else {
-                echo "<strong>❌ Campo 'en_oferta' no existe</strong><br>";
-            }
+            // if (property_exists($ruta, 'en_oferta')) {
+            //     echo "<strong>✅ en_oferta:</strong> " . ($ruta->en_oferta ?? '0') . "<br>";
+            // } else {
+            //     echo "<strong>❌ Campo 'en_oferta' no existe</strong><br>";
+            // }
             
-            if (property_exists($ruta, 'porcentaje_oferta')) {
-                echo "<strong>✅ porcentaje_oferta:</strong> " . ($ruta->porcentaje_oferta ?? '0') . "<br>";
-            } else {
-                echo "<strong>❌ Campo 'porcentaje_oferta' no existe</strong><br>";
-            }
-            echo "</div>";
+            // if (property_exists($ruta, 'porcentaje_oferta')) {
+            //     echo "<strong>✅ porcentaje_oferta:</strong> " . ($ruta->porcentaje_oferta ?? '0') . "<br>";
+            // } else {
+            //     echo "<strong>❌ Campo 'porcentaje_oferta' no existe</strong><br>";
+            // }
+            // echo "</div>";
             
             // Configuración de directorios
             $abs_us_root = isset($abs_us_root) ? $abs_us_root : '';
@@ -314,10 +343,18 @@ $tipos_paisajes = [
                         if(in_array($file_ext, ['jpg','jpeg','png','webp'])) {
                             $new_filename = 'ruta_'.strtolower(str_replace(' ','_',$_POST['nombre'])).'.'.$file_ext;
                             $target_path = $upload_image_dir.$new_filename;
-                            // Eliminar imagen anterior si existe
-                            if(!empty($ruta->imagen) && file_exists($abs_us_root.$us_url_root.$ruta->imagen)) {
-                                echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando imagen anterior: " . basename($ruta->imagen) . "</div>";
-                                unlink($abs_us_root.$us_url_root.$ruta->imagen);
+                            // ✅ CORREGIDO: Eliminar imagen anterior si existe
+                            if(!empty($ruta->imagen)) {
+                                // Construir la ruta correcta sin ../
+                                $imagen_filename = basename($ruta->imagen); // Solo el nombre del archivo
+                                $imagen_path_absoluta = $upload_image_dir . $imagen_filename; // Ruta absoluta correcta
+                                
+                                if(file_exists($imagen_path_absoluta)) {
+                                    echo "<div class='status-message'><i class='fas fa-trash-alt'></i> Eliminando imagen anterior: " . $imagen_filename . "</div>";
+                                    unlink($imagen_path_absoluta);
+                                } else {
+                                    echo "<div class='status-message'><i class='fas fa-info-circle'></i> Imagen anterior no encontrada en: " . $imagen_filename . "</div>";
+                                }
                             }
                             // Mover archivo subido a la carpeta de imágenes
                             if(move_uploaded_file($_FILES['imagen']['tmp_name'], $target_path)) {
@@ -478,6 +515,7 @@ $tipos_paisajes = [
                                             
                                             <optgroup label="🏔️ Paisajes Montañosos">
                                                 <option value="Montañas y bosques" <?= ($ruta->paisaje == 'Montañas y bosques') ? 'selected' : '' ?>>Montañas y bosques</option>
+                                                <option value="Montañas y viñedos" <?= ($ruta->paisaje == 'Montañas y viñedos') ? 'selected' : '' ?>>Montañas y viñedos</option>
                                                 <option value="Montañas y valles" <?= ($ruta->paisaje == 'Montañas y valles') ? 'selected' : '' ?>>Montañas y valles</option>
                                                 <option value="Montañas y lagos" <?= ($ruta->paisaje == 'Montañas y lagos') ? 'selected' : '' ?>>Montañas y lagos</option>
                                                 <option value="Sierra y bosques mediterráneos" <?= ($ruta->paisaje == 'Sierra y bosques mediterráneos') ? 'selected' : '' ?>>Sierra y bosques mediterráneos</option>
@@ -551,12 +589,53 @@ $tipos_paisajes = [
                                                 <input type="number" class="form-control" id="distancia" name="distancia" value="<?= $ruta->distancia ?>" step="0.1" min="0" required>
                                             </div>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label for="tiempo">Tiempo Estimado</label>
-                                                <input type="text" class="form-control" id="tiempo" name="tiempo" value="<?= htmlspecialchars($ruta->tiempo) ?>" required>
-                                            </div>
-                                        </div>
+<!-- REEMPLAZAR el div del campo tiempo actual con este código -->
+<div class="form-group">
+    <label for="tiempo">Tiempo Estimado</label>
+    <select class="form-control" id="tiempo" name="tiempo" required>
+        <option value="">-- Seleccionar tiempo estimado --</option>
+        
+        <?php if (!empty($tiempo_actual)): ?>
+            <!-- SIEMPRE mostrar el valor actual primero, esté o no en las opciones -->
+            <optgroup label="📌 Valor Actual en BD">
+                <option value="<?= htmlspecialchars($tiempo_actual) ?>" selected 
+                        style="background-color: <?= $tiempo_en_opciones ? '#d4edda' : '#fff3cd' ?>; font-weight: bold;">
+                    <?= htmlspecialchars($tiempo_actual) ?> 
+                    <?= $tiempo_en_opciones ? '(Estándar)' : '(Personalizado)' ?>
+                </option>
+            </optgroup>
+            
+            <optgroup label="📋 Otras Opciones">
+                <?php foreach($opciones_tiempo as $tiempo_opcion): ?>
+                    <?php if ($tiempo_opcion !== $tiempo_actual): // Solo mostrar si es diferente al actual ?>
+                        <option value="<?= htmlspecialchars($tiempo_opcion) ?>">
+                            <?= htmlspecialchars($tiempo_opcion) ?>
+                        </option>
+                    <?php endif; ?>
+                <?php endforeach; ?>
+            </optgroup>
+        <?php else: ?>
+            <!-- Si no hay valor actual, mostrar todas las opciones normalmente -->
+            <?php foreach($opciones_tiempo as $tiempo_opcion): ?>
+                <option value="<?= htmlspecialchars($tiempo_opcion) ?>">
+                    <?= htmlspecialchars($tiempo_opcion) ?>
+                </option>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </select>
+    
+    <small class="form-text text-muted">
+        <i class="fas fa-clock"></i> 
+        <?php if (!empty($tiempo_actual)): ?>
+            <span class="<?= $tiempo_en_opciones ? 'text-success' : 'text-warning' ?>">
+                Valor actual: "<?= htmlspecialchars($tiempo_actual) ?>" 
+                <?= $tiempo_en_opciones ? '(estándar)' : '(personalizado)' ?>
+            </span>
+        <?php else: ?>
+            Tiempo estimado total del recorrido
+        <?php endif; ?>
+    </small>
+</div>
                                     </div>
                                 </div>
                             </div>
@@ -916,6 +995,41 @@ $tipos_paisajes = [
         ?>
     </div>
     
+    <script>
+// ✅ SCRIPT ADICIONAL para mejorar la experiencia del usuario
+document.addEventListener('DOMContentLoaded', function() {
+    var tiempoSelect = document.getElementById('tiempo');
+    
+    if (tiempoSelect) {
+        console.log('🕐 Selector de tiempo inicializado');
+        console.log('📄 Valor seleccionado actualmente:', tiempoSelect.value);
+        
+        // Evento para detectar cambios
+        tiempoSelect.addEventListener('change', function() {
+            var valorSeleccionado = this.value;
+            var tiempoOriginal = '<?= htmlspecialchars($tiempo_actual) ?>';
+            
+            console.log('🔄 Tiempo cambiado a:', valorSeleccionado);
+            
+            if (valorSeleccionado !== tiempoOriginal && tiempoOriginal !== '') {
+                console.log('✏️ CAMBIO DETECTADO: "' + tiempoOriginal + '" → "' + valorSeleccionado + '"');
+            } else if (valorSeleccionado === tiempoOriginal) {
+                console.log('✅ Manteniendo valor original:', tiempoOriginal);
+            }
+        });
+        
+        // Verificar que el valor actual esté seleccionado
+        var opcionSeleccionada = tiempoSelect.querySelector('option[selected]');
+        if (opcionSeleccionada) {
+            console.log('✅ Opción preseleccionada encontrada:', opcionSeleccionada.value);
+        } else {
+            console.log('⚠️ No se encontró opción preseleccionada');
+        }
+    }
+});
+</script>
+
+
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

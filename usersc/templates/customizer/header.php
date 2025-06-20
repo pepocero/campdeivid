@@ -11,41 +11,41 @@ header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 ?>
 <!-- META TAGS PARA THUMBNAILS WHATSAPP -->
 <meta charset="UTF-8">
-<meta property="og:title" content="<?php echo $titulo; ?> - Candeivid -">
+<meta property="og:title" content="<?php echo $titulo; ?> - Candeivid">
 <meta property="og:description" content="<?php echo $descripcion; ?>">
-<meta property="og:image" content="<?php echo $imagen_url; ?>">
+<meta property="og:image" content="https://www.candeivid.com/images/hero/curvas1.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:type" content="image/jpg">
 <meta property="og:url" content="<?php echo $url_actual; ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Candeivid">
 <meta property="og:locale" content="es_ES">
-<meta property="fb:app_id" content="1785029542388500">
+<meta property="fb:app_id" content="1053807056846257">
 <meta property="og:updated_time" content="<?php echo date('c'); ?>">
 <meta name="twitter:site" content="@candeivid">
 <meta name="twitter:creator" content="@rutascandeivid">
-<meta property="fb:app_id" content="1785029542388500">
+<meta property="fb:app_id" content="1053807056846257">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<?php echo $titulo; ?> - Candeivid">
+<meta name="twitter:title" content="<?php echo $titulo; ?>Candeivid">
 <meta name="twitter:description" content="<?php echo $descripcion; ?>">
-<meta name="twitter:image" content="<?php echo $imagen_url; ?>">
+<meta name="twitter:image" content="https://www.candeivid.com/images/hero/curvas1.jpg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="<?php echo $descripcion; ?>">
 
 <!-- meta tags especificos para facebook -->
 <meta charset="UTF-8">
-<meta property="og:title" content="<?php echo $titulo; ?> - Candeivid">
+<meta property="og:title" content="<?php echo $titulo; ?> Candeivid">
 <meta property="og:description" content="<?php echo $descripcion; ?>">
-<meta property="og:image" content="<?php echo $imagen_url; ?>">
+<meta property="og:image" content="https://www.candeivid.com/images/hero/curvas1.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:type" content="image/jpg">
 <meta property="og:url" content="<?php echo $url_actual; ?>">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Candeivid">
 <meta property="og:locale" content="es_ES">
-<meta property="fb:app_id" content="TU_APP_ID_AQUI">
+<meta property="fb:app_id" content="1053807056846257">
 <meta property="og:updated_time" content="<?php echo date('c'); ?>">
 
 <!-- Meta tags específicos para Facebook -->
@@ -63,38 +63,20 @@ header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 <meta name="instagram:site" content="@candeivid">
 <meta name="instagram:creator" content="@candeivid">
 
-<!-- Twitter Card Meta Tags (mejorados) -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="<?php echo $titulo; ?> - Candeivid">
-<meta name="twitter:description" content="<?php echo $descripcion; ?>">
-<meta name="twitter:image" content="<?php echo $imagen_url; ?>">
-<meta name="twitter:image:alt" content="<?php echo $titulo; ?> - Ruta en moto">
-<meta name="twitter:site" content="@candeivid">
-<meta name="twitter:creator" content="@candeivid">
-<meta name="twitter:domain" content="candeivid.com">
-
-<!-- Meta tags adicionales para LinkedIn -->
-<meta property="og:image:alt" content="<?php echo $titulo; ?> - Ruta en moto">
-<meta name="linkedin:owner" content="Candeivid">
-
-<!-- Meta tags para Pinterest -->
-<meta name="pinterest:description" content="<?php echo $descripcion; ?>">
-<meta name="pinterest:media" content="<?php echo $imagen_url; ?>">
-<meta name="pinterest:url" content="<?php echo $url_actual; ?>">
 
 <!-- Meta tags adicionales para mejor SEO social -->
 <meta name="author" content="Candeivid">
 <meta name="publisher" content="Candeivid">
 <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <meta name="theme-color" content="#1a5490">
-<meta property="fb:app_id" content="TU_APP_ID_AQUI">
+<meta property="fb:app_id" content="1053807056846257">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="<?php echo $titulo; ?> - Candeivid">
 <meta name="twitter:description" content="<?php echo $descripcion; ?>">
-<meta name="twitter:image" content="<?php echo $imagen_url; ?>">
+<meta name="twitter:image" content="https://www.candeivid.com/images/hero/curvas1.jpg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="<?php echo $descripcion; ?>">
-<title><?php echo $titulo; ?> - Candeivid</title>
+<title><?php echo $titulo; ?>Candeivid</title>
 <link rel="canonical" href="<?php echo $url_actual; ?>">
 
 
@@ -109,8 +91,9 @@ header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
 <link rel="stylesheet" href="<?=$us_url_root?>users/fonts/css/solid.min.css">
 <link rel="stylesheet" href="<?=$us_url_root?>users/fonts/css/v4-shims.min.css">
 
-<!-- CUSTOM CSS -->
+<!-- CUSTOM NAV CSS -->
 <link rel="stylesheet" href="<?=$us_url_root?>css/custom_nav.css">
+
 <?php
 require_once $abs_us_root . $us_url_root . "users/js/jquery.php";
 ?>
@@ -161,6 +144,8 @@ if(file_exists($abs_us_root.$us_url_root.'usersc/templates/'.$settings->template
   <link href="<?=$us_url_root?>usersc/templates/<?=$settings->template?>.css" rel="stylesheet">
 <?php } ?>
 
+<!-- Facebook Pixel Code --><script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js'); fbq('init', '1904021877104624'); fbq('track', 'PageView');</script><noscript> <img height="1" width="1" src="https://www.facebook.com/tr?id=1904021877104624&ev=PageView&noscript=1"/></noscript><!-- End Facebook Pixel Code -->
+  
 </head>
 <body class="d-flex flex-column min-vh-100">
 <?php require_once($abs_us_root.$us_url_root.'users/includes/template/header3_must_include.php'); ?>
