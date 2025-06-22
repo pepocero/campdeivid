@@ -305,6 +305,26 @@ try {
 if(Input::get('new')) {
     $mostrar_formulario = true;
 }
+
+// ✅ GENERADOR DE OPCIONES DE TIEMPO PARA EL CAMPO TIEMPO
+$opciones_tiempo = [];
+for ($horas = 1; $horas <= 20; $horas++) {
+    // Hora exacta (ej: "1 hora", "2 horas")
+    if ($horas == 1) {
+        $opciones_tiempo[] = "1 hora";
+    } else {
+        $opciones_tiempo[] = "$horas horas";
+    }
+    
+    // Hora y media (ej: "1 hora 30 minutos", "2 horas 30 minutos")
+    if ($horas < 20) { // No agregar "20 horas 30 minutos"
+        if ($horas == 1) {
+            $opciones_tiempo[] = "1 hora 30 minutos";
+        } else {
+            $opciones_tiempo[] = "$horas horas 30 minutos";
+        }
+    }
+}
 ?>
 
 <style>
@@ -344,90 +364,194 @@ if(Input::get('new')) {
     margin-right: 8px;
     color: #28a745;
 }
+
+/* ✅ NUEVO: Estilos para ofertas */
+.oferta-badge {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: linear-gradient(45deg, #ff6b6b, #ff4757);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+    z-index: 10;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.precio-original {
+    text-decoration: line-through;
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+.precio-oferta {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.precio-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+/* ✅ CSS adicional para personalizar el acordeón */
+
+.accordion-button.bg-primary {
+    border: none;
+}
+.accordion-button.bg-primary:not(.collapsed) {
+    /* Color secundario al expandir */
+    background-color: #ff6b00 !important;
+    color: white !important;
+}
+.accordion-button.bg-primary:focus {
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.accordion-button.bg-primary::after {
+    filter: brightness(0) invert(1); /* Hace la flecha blanca */
+}
 </style>
 
 <div class="container py-4">
     
-    <!-- Panel de Administración -->
-    <div class="card border-primary mb-4">
-        <div class="card-header bg-primary text-white text-center">
-            <h4 class="text-white"><i class="fas fa-cogs"></i> Administrar Rutas</h4>
-        </div>
-        <div class="card-body">
-            <?php if(Session::exists('success')): ?>
-                <div class="alert alert-success"><?= Session::flash('success') ?></div>
-            <?php endif; ?>
-            <?php if(Session::exists('error')): ?>
-                <div class="alert alert-danger"><?= Session::flash('error') ?></div>
-            <?php endif; ?>
-            
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-                <?php 
-                // Forzar a obtener datos frescos de la base de datos
-                $db = DB::getInstance(); 
-                $rutas = $db->query("SELECT id, nombre, imagen, plan, nivel, paisaje, precio FROM aa_rutas ORDER BY nombre")->results();
-                if(empty($rutas)): 
-                ?>
-                <div class="col-12">
-                    <div class="alert alert-info">
-                        No hay rutas disponibles. ¡Crea tu primera ruta!
-                    </div>
-                </div>
-                <?php else: ?>
-                <?php foreach($rutas as $r): ?>
-                <div class="col">
-                    <div class="card h-100 shadow-sm">
-                        <div class="position-relative">
-                            <a href='ruta_detalle.php?id=<?= $r->id ?>'>
-                                <img src="<?= $r->imagen ?: '../images/placeholder.jpg' ?>" class="card-img-top" alt="<?= $r->nombre ?>" style="height: 100px; object-fit: cover;">
-                            </a>
-                            <div class="position-absolute top-0 end-0 m-1">
-                                <span class="badge <?= $r->plan == 'Premium' ? 'bg-danger' : 'bg-secondary' ?>">
-                                    <?= $r->plan ?>
-                                </span>
+    <!-- ✅ ACORDEÓN: Panel de Administración -->
+<div class="accordion mb-4" id="accordionAdminRutas">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingAdminRutas">
+            <button class="accordion-button collapsed bg-primary text-white" type="button" 
+                    data-bs-toggle="collapse" data-bs-target="#collapseAdminRutas" 
+                    aria-expanded="false" aria-controls="collapseAdminRutas">
+                <i class="fas fa-cogs me-2"></i> Administrar Rutas
+                <span class="badge bg-light text-dark ms-2">
+                    <?php 
+                    // Contar rutas para mostrar en el badge
+                    $db = DB::getInstance(); 
+                    $count_rutas = $db->query("SELECT COUNT(*) as total FROM aa_rutas")->first();
+                    echo $count_rutas->total ?? 0;
+                    ?> rutas
+                </span>
+            </button>
+        </h2>
+        <div id="collapseAdminRutas" class="accordion-collapse collapse" 
+             aria-labelledby="headingAdminRutas" data-bs-parent="#accordionAdminRutas">
+            <div class="accordion-body p-0">
+                <!-- Contenido original del card-body -->
+                <div class="card-body">
+                    <?php if(Session::exists('success')): ?>
+                        <div class="alert alert-success"><?= Session::flash('success') ?></div>
+                    <?php endif; ?>
+                    <?php if(Session::exists('error')): ?>
+                        <div class="alert alert-danger"><?= Session::flash('error') ?></div>
+                    <?php endif; ?>
+                    
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+                        <?php 
+                        // ✅ MEJORADO: Consulta que incluye campos de oferta
+                        $db = DB::getInstance(); 
+                        $rutas = $db->query("SELECT id, nombre, imagen, plan, nivel, paisaje, precio, en_oferta, porcentaje_oferta FROM aa_rutas ORDER BY id DESC")->results();
+                        if(empty($rutas)): 
+                        ?>
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                No hay rutas disponibles. ¡Crea tu primera ruta!
                             </div>
                         </div>
-                        <div class="card-body p-2">
-                            <h6 class="card-title text-truncate mb-1" title="<?= $r->nombre ?>"><?= $r->nombre ?></h6>
-                            <small class="text-muted">
-                                <?php 
-                                // Mapeo de niveles antiguos a nuevos
-                                $nivel_mostrado = $r->nivel;
-                                if ($nivel_mostrado == 'Novato') $nivel_mostrado = 'Piloto nuevo';
-                                if ($nivel_mostrado == 'Intermedio') $nivel_mostrado = 'Domando Curvas';
-                                if ($nivel_mostrado == 'Experto') $nivel_mostrado = 'Maestro del Asfalto';
-                                ?>
-                                <span class="badge <?= in_array($nivel_mostrado, ['Piloto nuevo', 'Novato']) ? 'bg-info' : 
-                                                   (in_array($nivel_mostrado, ['Domando Curvas', 'Intermedio']) ? 'bg-warning text-dark' : 'bg-danger') ?>">
-                                    <?= $nivel_mostrado ?>
-                                </span>
-                                <span class="badge <?= $r->plan == 'Premium' ? 'bg-secondary text-dark' : 'bg-success' ?>">
-                                    <?= $r->plan == 'Premium' ? number_format($r->precio, 2) . '€' : 'Gratis' ?>
-                                </span>
-                            </small>
-                            <div class="d-flex justify-content-between mt-2">
-                                <a href="editar_manual.php?id=<?= $r->id ?>" class="btn btn-sm btn-warning">
-                                    <i class="fas fa-edit"></i> Editar
-                                </a>
-                                
-                                <a href="galeria_ruta.php?id=<?= $r->id ?>" class="btn btn-sm btn-info">
-                                    <i class="fas fa-images"></i> Galería
-                                </a>
-                                
-                                <a href="eliminar_manual.php?id=<?= $r->id ?>" 
-                                   onclick="return confirm('¿Estás seguro de querer eliminar esta ruta permanentemente?')" 
-                                   class="btn btn-sm btn-danger">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </a>
+                        <?php else: ?>
+                        <?php foreach($rutas as $r): ?>
+                        <div class="col">
+                            <div class="card h-100 shadow-sm">
+                                <div class="position-relative">
+                                    <!-- ✅ NUEVO: Badge de oferta si está en oferta -->
+                                    <?php if($r->en_oferta && $r->porcentaje_oferta > 0): ?>
+                                    <div class="oferta-badge">
+                                        <i class="fas fa-fire"></i> -<?= $r->porcentaje_oferta ?>%
+                                    </div>
+                                    <?php endif; ?>
+                                    
+                                    <a href='ruta_detalle.php?id=<?= $r->id ?>'>
+                                        <img src="<?= $r->imagen ?: '../images/placeholder.jpg' ?>" class="card-img-top" alt="<?= $r->nombre ?>" style="height: 100px; object-fit: cover;">
+                                    </a>
+                                    <div class="position-absolute top-0 end-0 m-1">
+                                        <span class="badge <?= $r->plan == 'Premium' ? 'bg-danger' : 'bg-secondary' ?>">
+                                            <?= $r->plan ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-2">
+                                    <h6 class="card-title text-truncate mb-1" title="<?= $r->nombre ?>"><?= $r->nombre ?></h6>
+                                    <small class="text-muted">
+                                        <?php 
+                                        // Mapeo de niveles antiguos a nuevos
+                                        $nivel_mostrado = $r->nivel;
+                                        if ($nivel_mostrado == 'Novato') $nivel_mostrado = 'Piloto nuevo';
+                                        if ($nivel_mostrado == 'Intermedio') $nivel_mostrado = 'Domando Curvas';
+                                        if ($nivel_mostrado == 'Experto') $nivel_mostrado = 'Maestro del Asfalto';
+                                        ?>
+                                        <span class="badge <?= in_array($nivel_mostrado, ['Piloto nuevo', 'Novato']) ? 'bg-info' : 
+                                                           (in_array($nivel_mostrado, ['Domando Curvas', 'Intermedio']) ? 'bg-warning text-dark' : 'bg-danger') ?>">
+                                            <?= $nivel_mostrado ?>
+                                        </span>
+                                        
+                                        <!-- ✅ MEJORADO: Mostrar precio con oferta si aplica -->
+                                        <?php if($r->plan == 'Premium'): ?>
+                                            <?php if($r->en_oferta && $r->porcentaje_oferta > 0): ?>
+                                                <div class="precio-container">
+                                                    <span class="badge bg-secondary precio-original">
+                                                        <?= number_format($r->precio, 2) ?>€
+                                                    </span>
+                                                    <span class="badge bg-danger precio-oferta">
+                                                        <?php 
+                                                        $precio_con_descuento = $r->precio * (1 - ($r->porcentaje_oferta / 100));
+                                                        echo number_format($precio_con_descuento, 2);
+                                                        ?>€
+                                                    </span>
+                                                </div>
+                                            <?php else: ?>
+                                                <span class="badge bg-secondary">
+                                                    <?= number_format($r->precio, 2) ?>€
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span class="badge bg-success">Gratis</span>
+                                        <?php endif; ?>
+                                    </small>
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <a href="editar_manual.php?id=<?= $r->id ?>" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        
+                                        <a href="galeria_ruta.php?id=<?= $r->id ?>" class="btn btn-sm btn-info">
+                                            <i class="fas fa-images"></i> Galería
+                                        </a>
+                                        
+                                        <a href="eliminar_manual.php?id=<?= $r->id ?>" 
+                                           onclick="return confirm('¿Estás seguro de querer eliminar esta ruta permanentemente?')" 
+                                           class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i> Eliminar
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <?php endforeach; ?>
-                <?php endif; ?>
             </div>
         </div>
     </div>
+</div>
 
     <!-- Botón Nueva Ruta -->
     <div class="mb-4 text-right">
@@ -575,11 +699,22 @@ if(Input::get('new')) {
                             </div>
                         </div>
                         
-                        <div class="form-group">
-                            <label>Tiempo Estimado</label>
-                            <input type="text" name="tiempo" class="form-control"
-                                   placeholder="Ej: 3 horas" required value="<?= Input::get('tiempo') ?? '' ?>">
-                        </div>
+                        <!-- Campo de Tiempo Estimado con Desplegable -->
+<div class="form-group">
+    <label>Tiempo Estimado</label>
+    <select name="tiempo" class="form-control" required>
+        <option value="">-- Seleccionar tiempo estimado --</option>
+        <?php foreach($opciones_tiempo as $tiempo_opcion): ?>
+            <option value="<?= $tiempo_opcion ?>" 
+                    <?= (Input::get('tiempo') == $tiempo_opcion) ? 'selected' : '' ?>>
+                <?= $tiempo_opcion ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <small class="form-text text-muted">
+        <i class="fas fa-clock"></i> Tiempo estimado total del recorrido
+    </small>
+</div>
                     </div>
                 </div>
 
@@ -655,46 +790,30 @@ if(Input::get('new')) {
     <!-- Script específico para el formulario -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar TinyMCE en el campo de descripción completa
+    
+        // Inicializar TinyMCE
         tinymce.init({
-            selector: '#editor',
-            height: 400,
-            menubar: false,
-            plugins: [
-                'advlist autolink lists link image charmap print preview anchor',
-                'searchreplace visualblocks code fullscreen',
-                'insertdatetime media table paste code help wordcount'
-            ],
-            toolbar: 'undo redo | formatselect | ' +
-                     'bold italic backcolor | alignleft aligncenter ' +
-                     'alignright alignjustify | bullist numlist outdent indent | ' +
-                     'removeformat | fontselect fontsizeselect | help',
-            font_formats: 'Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats',
-            fontsize_formats: '8pt 10pt 12pt 14pt 16pt 18pt 24pt 36pt 48pt',
-            content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-            language: 'es',
-            language_url: 'https://cdn.jsdelivr.net/npm/tinymce-langs/langs/es.js',
-            branding: false,
-            promotion: false,
-            browser_spellcheck: true,
-            contextmenu: false,
-            // ✅ MEJORADO: Configuración para mejor manejo de contenido
-            entity_encoding: 'raw',
-            keep_styles: false,
-            verify_html: false,
-            cleanup_on_startup: true,
-            trim_span_elements: true,
-            setup: function(editor) {
-                // Sincronizar contenido automáticamente
-                editor.on('change keyup', function() {
-                    editor.save();
-                });
-                // Asegurarse de que TinyMCE guarde el contenido antes del envío
-                editor.on('change', function() {
-                    tinymce.triggerSave();
-                });
-            }
-        });
+                        selector: '#editor',
+                        height: 400,
+                        language: 'es',
+                        plugins: [
+                            'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                            'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                            'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                        ],
+                        toolbar: 'undo redo | blocks | ' +
+                            'bold italic forecolor | alignleft aligncenter ' +
+                            'alignright alignjustify | bullist numlist outdent indent | ' +
+                            'removeformat | help',
+                        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif; font-size: 14px; }',
+                        setup: function (editor) {
+                            editor.on('change', function () {
+                                editor.save();
+                            });
+                        },
+                        branding: false,
+                        promotion: false
+                    });
         
         // Agregar manejador para el envío del formulario
         document.getElementById('formNuevaRuta').addEventListener('submit', function(e) {

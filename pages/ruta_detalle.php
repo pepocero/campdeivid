@@ -51,6 +51,12 @@ try {
         }
     }
     
+    // ✅ NUEVO: Variables para sistema de cupones
+    $cupon_aplicado = false;
+    $cupon_data = null;
+    $precio_con_cupon = $precio_final;
+    $descuento_cupon = 0;
+    
     // Obtener ruta del archivo GPX desde la base de datos
     $gpxPath = $ruta->gpx;
     $gpxFile = $us_url_root.$gpxPath;
@@ -59,6 +65,8 @@ try {
     Session::flash('error', $e->getMessage());
     Redirect::to('pages/rutas.php');
 }
+
+echo $gpxFile;
 ?>
 
 <!-- PAYPAL SDK LIVE -->
@@ -254,6 +262,176 @@ try {
     overflow: hidden;
 }
 
+/* ===== ESTILOS PARA SISTEMA DE CUPONES ===== */
+.cupon-section {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+    border: 2px solid #2196f3;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.cupon-section.cupon-aplicado {
+    background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
+    border-color: #4caf50;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+}
+
+.cupon-input-group {
+    position: relative;
+}
+
+.cupon-input {
+    border-radius: 8px 0 0 8px;
+    border: 2px solid #2196f3;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: small;
+    text-transform: uppercase;
+    background: white;
+}
+
+.cupon-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(33, 150, 243, 0.25);
+    border-color: #1976d2;
+}
+
+.cupon-btn {
+    border-radius: 0 8px 8px 0;
+    border: 2px solid #2196f3;
+    border-left: none;
+    padding: 0.75rem 1.5rem;
+    background: #2196f3;
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.cupon-btn:hover {
+    background: #1976d2;
+    border-color: #1976d2;
+    transform: translateY(-1px);
+    color: white;
+}
+
+.cupon-btn:disabled {
+    background: #ccc;
+    border-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cupon-mensaje {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.cupon-mensaje.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.cupon-mensaje.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.cupon-loading {
+    display: none;
+    margin-top: 0.5rem;
+    text-align: center;
+    color: #666;
+}
+
+.precio-breakdown {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+}
+
+.precio-linea {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    padding: 0.25rem 0;
+}
+
+.precio-linea.total {
+    border-top: 2px solid #ddd;
+    margin-top: 0.5rem;
+    padding-top: 0.75rem;
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.precio-original-cupon {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.precio-descuento-cupon {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.cupon-aplicado-info {
+    background: linear-gradient(45deg, #4caf50, #8bc34a);
+    color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cupon-aplicado-info::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.1) 2px,
+        rgba(255,255,255,0.1) 4px
+    );
+    animation: shine 3s linear infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.remover-cupon {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 1rem;
+    opacity: 0.8;
+    transition: opacity 0.3s ease;
+}
+
+.remover-cupon:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
 /* ===== RESPONSIVE MÓVIL ===== */
 @media (max-width: 768px) {
     .purchase-card {
@@ -291,6 +469,21 @@ try {
         border-right: none;
         border-top: 3px solid #dc3545;
         border-bottom: 3px solid #dc3545;
+    }
+    
+    /* Cupones responsive */
+    .cupon-input-group {
+        flex-direction: column;
+    }
+    
+    .cupon-input, .cupon-btn {
+        border-radius: 8px;
+        border: 2px solid #2196f3;
+        margin-bottom: 0.5rem;
+    }
+    
+    .cupon-btn {
+        margin-bottom: 0;
     }
 }
 
@@ -874,11 +1067,18 @@ body.fullscreen-active {
                         </ul>
                         
                         <h4 class="mb-3 border-bottom pb-2">Descripción completa</h4>
-                        <div class="text-justify"><?php echo html_entity_decode($ruta->descripcion_completa); ?></div>                        
+                        <div class="text-justify"><?php echo html_entity_decode($ruta->descripcion_completa); ?></div> 
+                                               
                        
                     </div>
                 </div>
             </div>
+            <!-- ===== BOTÓN DE COMPARTIR ===== -->
+<div class="text-center my-4">
+    <button class="btn btn-success" onclick="compartirRuta()" id="btnCompartir">
+        <i class="fas fa-share-alt"></i> Compartir esta ruta
+    </button>
+</div>
         </div>
 
         <div class="col-md-4">
@@ -943,6 +1143,55 @@ body.fullscreen-active {
                     </div>
                     <?php endif; ?>
                     
+                    <!-- ✅ NUEVO: Sistema de Cupones -->
+                    <?php if($esPremium && $precio_final > 0): ?>
+                    <div class="cupon-section" id="cuponSection">
+                        <h6><i class="fas fa-ticket-alt"></i> ¿Tienes un cupón de descuento?</h6>
+                        
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codigoCupon" placeholder="Ingresa tu código" maxlength="50">
+                            <button class="btn btn-success" type="button" id="aplicarCupon">
+                                <i class="fas fa-check me-1"></i>
+                                <!-- En pantallas grandes pone este texto: -->
+                                <span class="d-none d-sm-inline">Aplicar</span>
+                                <!-- En pantallas pequeñas pone este texto:  -->
+                                <span class="d-sm-none">OK</span>
+                            </button>
+                        </div>
+                        
+                        <div class="cupon-loading" id="cuponLoading">
+                            <i class="fas fa-spinner fa-spin"></i> Validando cupón...
+                        </div>
+                        
+                        <div class="cupon-mensaje" id="cuponMensaje" style="display: none;"></div>
+                    </div>
+
+                    <!-- Información de cupón aplicado (se muestra cuando se aplica un cupón) -->
+                    <div class="cupon-aplicado-info" id="cuponAplicadoInfo" style="display: none;">
+                        <i class="fas fa-ticket-alt"></i> 
+                        Cupón <strong id="cuponAplicadoCodigo"></strong> aplicado
+                        <button type="button" class="remover-cupon" id="removerCupon" title="Remover cupón">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+
+                    <!-- Desglose de precios con cupón -->
+                    <div class="precio-breakdown" id="precioBreakdown" style="display: none;">
+                        <div class="precio-linea">
+                            <span>Precio original:</span>
+                            <span id="precioOriginalDisplay"><?= number_format($precio_final, 2) ?>€</span>
+                        </div>
+                        <div class="precio-linea" id="lineaDescuentoCupon" style="display: none;">
+                            <span>Descuento cupón (<span id="cuponDescripcion"></span>):</span>
+                            <span class="precio-descuento-cupon">-<span id="descuentoCuponDisplay">0.00</span>€</span>
+                        </div>
+                        <div class="precio-linea total">
+                            <span>Total a pagar:</span>
+                            <span id="precioFinalDisplay"><?= number_format($precio_final, 2) ?>€</span>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+                    
                     <input type="hidden" name="precio_final" id="precio-final" value="<?= number_format($precio_final, 2, '.', '') ?>">
                     
                     <?php else: ?>
@@ -970,57 +1219,28 @@ body.fullscreen-active {
                     <?php if($user->isLoggedIn()): ?>
                         <?php if($esPremium): ?>
                             <div id="paypal-button-container"></div>
-<script>
-paypal.Buttons({
-  createOrder: function(data, actions) {
-    return actions.order.create({
-      purchase_units: [{
-        amount: {
-          value: document.getElementById('precio-final').value,
-          currency_code: "EUR"
-        }
-      }]
-    });
-  },
-  onApprove: function(data, actions) {
-    return actions.order.capture().then(function(details) {
-      // Obtener el ID de la transacción correcta (ID de captura)
-      let transactionId = details.id; // ID de la orden por defecto
-      
-      // Comprobar si existe el ID de transacción real (ID de captura)
-      if (details.purchase_units && 
-          details.purchase_units[0] && 
-          details.purchase_units[0].payments && 
-          details.purchase_units[0].payments.captures && 
-          details.purchase_units[0].payments.captures[0]) {
-          transactionId = details.purchase_units[0].payments.captures[0].id;
-      }
-      
-      // Datos capturados de la venta
-      const rutaId = <?= $ruta_id ?>;
-      const precio = document.getElementById('precio-final').value;
-      const status = details.status;
-      const payerName = details.payer.name.given_name + ' ' + details.payer.name.surname;
-      const payerEmail = details.payer.email_address;
-      const payerId = details.payer.payer_id;
-      
-      // Establecemos todos los valores a 0 ya que eliminamos las opciones
-      const repostaje = 0;
-      const hoteles = 0;
-      const puntos = 0;
-
-      // Redirigir a la página de procesamiento de venta
-      window.location.href = `procesar_venta.php?ruta_id=${rutaId}&precio=${precio}&transactionId=${encodeURIComponent(transactionId)}&status=${encodeURIComponent(status)}&payerId=${encodeURIComponent(payerId)}&payerEmail=${encodeURIComponent(payerEmail)}&payerName=${encodeURIComponent(payerName)}&repostaje=${repostaje}&hoteles=${hoteles}&puntos=${puntos}`;
-    });
-  }
-}).render('#paypal-button-container');
-</script>
-
                         <?php elseif($gpxExists): ?>
                             <div class="download-btn-container">
-                                <a href="<?= $gpxFile ?>" class="btn btn-success btn-lg w-100" download>
+                                <!-- <a href="<?= $gpxFile ?>" class="btn btn-success btn-lg w-100" download>
                                     <i class="fas fa-download me-2"></i> Descargar GPX
-                                </a>
+                                </a> -->
+                                <!-- Boton descarga registra bajada: -->
+                                <?php $csrf = Token::generate(); ?>
+<a id="btnDescargar"
+   href="<?= 
+            
+
+            // Si $ruta->gpx ya empieza por «/», NO añadimos $us_url_root.
+            $gpxUrl = (strpos($gpxFile, '/') === 0)
+             ? $gpxFile
+             : $us_url_root . $gpxFile;
+        ?>"
+   data-ruta="<?= $ruta->id ?>" 
+   data-csrf="<?= $csrf ?>"
+   download
+   class="btn btn-success btn-lg w-100">
+  Descargar gratis
+</a>
                                 <p class="text-muted mt-2 small text-center">
                                     <i class="fas fa-info-circle"></i> Compatible con la mayoría de navegadores GPS
                                 </p>
@@ -1543,7 +1763,233 @@ updateSlideshow();
 
 <?php endif; //FIN DE GALERIA ?>
 
+<!-- Variables JavaScript necesarias para cupones -->
 <script>
+// Variables globales para el sistema de cupones
+window.cuponData = {
+    rutaId: <?= $ruta_id ?>,
+    precioOriginal: <?= $precio_final ?>,
+    cuponAplicado: null,
+    precioFinal: <?= $precio_final ?>
+};
+
+// ✅ SISTEMA DE CUPONES - JavaScript principal
+document.addEventListener('DOMContentLoaded', function() {
+    // Solo ejecutar si existe la sección de cupones
+    if (!document.getElementById('cuponSection')) {
+        // Si no hay sección de cupones, inicializar PayPal directamente
+        if (document.getElementById('paypal-button-container')) {
+            renderPayPalButtons();
+        }
+        return;
+    }
+    
+    const codigoCuponInput = document.getElementById('codigoCupon');
+    const aplicarCuponBtn = document.getElementById('aplicarCupon');
+    const cuponLoading = document.getElementById('cuponLoading');
+    const cuponMensaje = document.getElementById('cuponMensaje');
+    const cuponSection = document.getElementById('cuponSection');
+    const cuponAplicadoInfo = document.getElementById('cuponAplicadoInfo');
+    const precioBreakdown = document.getElementById('precioBreakdown');
+    const removerCuponBtn = document.getElementById('removerCupon');
+    
+    // Aplicar cupón
+    aplicarCuponBtn.addEventListener('click', function() {
+        const codigo = codigoCuponInput.value.trim().toUpperCase();
+        
+        if (!codigo) {
+            mostrarMensaje('Por favor ingresa un código de cupón', 'error');
+            return;
+        }
+        
+        aplicarCupon(codigo);
+    });
+    
+    // Aplicar cupón al presionar Enter
+    codigoCuponInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            aplicarCuponBtn.click();
+        }
+    });
+    
+    // Remover cupón
+    removerCuponBtn.addEventListener('click', function() {
+        removerCupon();
+    });
+    
+    // Convertir a mayúsculas automáticamente
+    codigoCuponInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    function aplicarCupon(codigo) {
+        // Mostrar loading
+        cuponLoading.style.display = 'block';
+        aplicarCuponBtn.disabled = true;
+        cuponMensaje.style.display = 'none';
+        
+        // Hacer petición AJAX
+        fetch('validar_cupon.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                codigo: codigo,
+                ruta_id: window.cuponData.rutaId,
+                precio_original: window.cuponData.precioOriginal
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            cuponLoading.style.display = 'none';
+            aplicarCuponBtn.disabled = false;
+            
+            if (data.success) {
+                // Cupón válido
+                window.cuponData.cuponAplicado = data.cupon;
+                window.cuponData.precioFinal = data.precios.final_raw;
+                
+                mostrarCuponAplicado(data);
+                actualizarPayPal();
+                mostrarMensaje('¡Cupón aplicado correctamente!', 'success');
+            } else {
+                // Error en el cupón
+                mostrarMensaje(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            cuponLoading.style.display = 'none';
+            aplicarCuponBtn.disabled = false;
+            mostrarMensaje('Error al validar el cupón. Inténtalo de nuevo.', 'error');
+            console.error('Error:', error);
+        });
+    }
+    
+    function mostrarCuponAplicado(data) {
+        // Ocultar sección de entrada de cupón
+        cuponSection.style.display = 'none';
+        
+        // Mostrar información del cupón aplicado
+        document.getElementById('cuponAplicadoCodigo').textContent = data.cupon.codigo;
+        cuponAplicadoInfo.style.display = 'block';
+        
+        // Mostrar desglose de precios
+        document.getElementById('precioOriginalDisplay').textContent = data.precios.original + '€';
+        document.getElementById('cuponDescripcion').textContent = 
+            data.cupon.tipo_descuento === 'porcentaje' ? 
+            data.cupon.valor_descuento + '%' : 
+            data.cupon.valor_descuento + '€';
+        document.getElementById('descuentoCuponDisplay').textContent = data.precios.descuento;
+        document.getElementById('precioFinalDisplay').textContent = data.precios.final + '€';
+        document.getElementById('lineaDescuentoCupon').style.display = 'flex';
+        precioBreakdown.style.display = 'block';
+        
+        // Actualizar el precio en el input hidden
+        document.getElementById('precio-final').value = data.precios.final_raw;
+    }
+    
+    function removerCupon() {
+        // Resetear estado
+        window.cuponData.cuponAplicado = null;
+        window.cuponData.precioFinal = window.cuponData.precioOriginal;
+        
+        // Mostrar sección de entrada de cupón
+        cuponSection.style.display = 'block';
+        cuponAplicadoInfo.style.display = 'none';
+        precioBreakdown.style.display = 'none';
+        
+        // Limpiar input
+        codigoCuponInput.value = '';
+        cuponMensaje.style.display = 'none';
+        
+        // Restaurar precio original
+        document.getElementById('precio-final').value = window.cuponData.precioOriginal;
+        
+        // Actualizar PayPal
+        actualizarPayPal();
+    }
+    
+    function mostrarMensaje(mensaje, tipo) {
+        cuponMensaje.textContent = mensaje;
+        cuponMensaje.className = 'cupon-mensaje ' + tipo;
+        cuponMensaje.style.display = 'block';
+        
+        // Ocultar mensaje después de 5 segundos si es de éxito
+        if (tipo === 'success') {
+            setTimeout(() => {
+                cuponMensaje.style.display = 'none';
+            }, 5000);
+        }
+    }
+    
+    function actualizarPayPal() {
+        // Destruir PayPal existente
+        if (window.paypalButtonsRendered) {
+            document.getElementById('paypal-button-container').innerHTML = '';
+        }
+        
+        // Crear nuevo PayPal con precio actualizado
+        renderPayPalButtons();
+    }
+    
+    // Inicializar PayPal al cargar
+    renderPayPalButtons();
+});
+
+// ✅ PAYPAL BUTTONS MODIFICADO PARA CUPONES
+function renderPayPalButtons() {
+    if (!document.getElementById('paypal-button-container')) {
+        return; // No hay contenedor de PayPal
+    }
+    
+    paypal.Buttons({
+        createOrder: function(data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: document.getElementById('precio-final').value,
+                        currency_code: "EUR"
+                    }
+                }]
+            });
+        },
+        onApprove: function(data, actions) {
+            return actions.order.capture().then(function(details) {
+                // Obtener ID de transacción
+                let transactionId = details.id;
+                
+                if (details.purchase_units && 
+                    details.purchase_units[0] && 
+                    details.purchase_units[0].payments && 
+                    details.purchase_units[0].payments.captures && 
+                    details.purchase_units[0].payments.captures[0]) {
+                    transactionId = details.purchase_units[0].payments.captures[0].id;
+                }
+                
+                // Datos de la venta
+                const rutaId = <?= $ruta_id ?>;
+                const precio = document.getElementById('precio-final').value;
+                const status = details.status;
+                const payerName = details.payer.name.given_name + ' ' + details.payer.name.surname;
+                const payerEmail = details.payer.email_address;
+                const payerId = details.payer.payer_id;
+                
+                // Datos del cupón si está aplicado
+                let cuponParams = '';
+                if (window.cuponData.cuponAplicado) {
+                    cuponParams = `&cupon_id=${window.cuponData.cuponAplicado.id}&precio_original=${window.cuponData.precioOriginal}&descuento_cupon=${window.cuponData.precioOriginal - window.cuponData.precioFinal}`;
+                }
+                
+                // Redirigir con todos los parámetros
+                window.location.href = `procesar_venta.php?ruta_id=${rutaId}&precio=${precio}&transactionId=${encodeURIComponent(transactionId)}&status=${encodeURIComponent(status)}&payerId=${encodeURIComponent(payerId)}&payerEmail=${encodeURIComponent(payerEmail)}&payerName=${encodeURIComponent(payerName)}&repostaje=0&hoteles=0&puntos=0${cuponParams}`;
+            });
+        }
+    }).render('#paypal-button-container');
+    
+    window.paypalButtonsRendered = true;
+}
+
 // Función para guardar la ubicación actual y hacer login
 function loginAndReturn() {
     // Guardar la URL actual completa incluyendo parámetros
@@ -1559,6 +2005,137 @@ function registerAndReturn() {
     // Ir a la página de registro
     window.location.href = '../users/join.php';
 }
+
+// Al cargar la página, verificar si hay sesión con UserSpice PARA USAR CUPONES
+document.addEventListener('DOMContentLoaded', function() {
+    // Verificar si el usuario está logueado usando UserSpice
+    const isLoggedIn = <?php echo $user->isLoggedIn() ? 'true' : 'false'; ?>;
+    
+    if (!isLoggedIn) {
+        // Deshabilitar el input y botón de cupón
+        document.getElementById('codigoCupon').disabled = true;
+        document.getElementById('aplicarCupon').disabled = true;
+        
+        // Cambiar placeholder para informar
+        document.getElementById('codigoCupon').placeholder = "Inicia sesión para usar cupones";
+        
+        // Opcional: Agregar tooltip explicativo
+        document.getElementById('codigoCupon').title = "Debes iniciar sesión para aplicar cupones";
+    }
+});
+
+// JAVASCRIPT ARREGLADO COMPARTIR
+
+function compartirRuta() {
+    const url = window.location.href;
+    const titulo = <?= json_encode($titulo) ?>;
+    
+    // Detectar si es móvil real
+    const esMobil = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // Solo usar navigator.share en móviles reales
+    if (esMobil && navigator.share) {
+        navigator.share({
+            title: titulo + ' - Candeivid',
+            text: <?= json_encode($descripcion) ?>,
+            url: url
+        }).catch(() => {
+            // Si falla en móvil, copiar
+            copiarEnlace(url);
+        });
+    } else {
+        // En escritorio, siempre copiar
+        copiarEnlace(url);
+    }
+}
+
+function copiarEnlace(url) {
+    // Crear elemento temporal
+    const textarea = document.createElement('textarea');
+    textarea.value = url;
+    
+    // Estilos para hacer invisible pero seleccionable
+    textarea.style.position = 'fixed';
+    textarea.style.top = '0';
+    textarea.style.left = '0';
+    textarea.style.width = '2em';
+    textarea.style.height = '2em';
+    textarea.style.padding = '0';
+    textarea.style.border = 'none';
+    textarea.style.outline = 'none';
+    textarea.style.boxShadow = 'none';
+    textarea.style.background = 'transparent';
+    
+    document.body.appendChild(textarea);
+    
+    // Enfocar y seleccionar
+    textarea.focus();
+    textarea.select();
+    textarea.setSelectionRange(0, 99999);
+    
+    let copiado = false;
+    
+    try {
+        // Intentar copiar
+        copiado = document.execCommand('copy');
+    } catch (err) {
+        console.log('Error al copiar:', err);
+    }
+    
+    // Limpiar
+    document.body.removeChild(textarea);
+    
+    if (copiado) {
+        mostrarExito();
+    } else {
+        // Último recurso: mostrar el enlace
+        const mensaje = 'Copia este enlace:';
+        if (window.prompt) {
+            prompt(mensaje, url);
+        } else {
+            alert(mensaje + '\n\n' + url);
+        }
+    }
+}
+
+function mostrarExito() {
+    const btn = document.getElementById('btnCompartir');
+    const textoOriginal = btn.innerHTML;
+    
+    // Cambiar aspecto del botón temporalmente
+    btn.innerHTML = '<i class="fas fa-check"></i> ¡Enlace copiado!';
+    btn.style.backgroundColor = '#28a745';
+    btn.style.borderColor = '#28a745';
+    
+    // Restaurar después de 2 segundos
+    setTimeout(() => {
+        btn.innerHTML = textoOriginal;
+        btn.style.backgroundColor = '';
+        btn.style.borderColor = '';
+    }, 2000);
+}
 </script>
+
+<!-- SCRIPT PARA REGISTRAR LA DESCARGA -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnDescargar');
+  btn.addEventListener('click', function () {
+    // 1️⃣ Registramos la descarga (no bloquea la navegación)
+    fetch('registrar_descarga.php', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: new URLSearchParams({
+        csrf: '<?= $csrf ?>',
+        ruta_id: this.dataset.ruta,
+        tipo: 'gratis'
+      })
+    })
+    .catch(err => console.error('Log descarga:', err));
+    // 2️⃣ La descarga se hace sola porque el anchor ya tiene el href
+  });
+});
+</script>
+
 
 <?php require_once $abs_us_root . $us_url_root . 'users/includes/html_footer.php'; ?>

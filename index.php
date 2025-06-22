@@ -18,6 +18,9 @@ if(isset($user) && $user->isLoggedIn()){
                 <br>   Candeivid ofrece las mejores rutas para moteros, cuidadosamente planificadas por expertos para garantizar la mejor experiencia de conducción.
                 </p>               
             </div>
+            <button class="btn btn-primary experience-badge">
+                <a href="pages/rutas.php" style="text-decoration: none; color: white;">&nbsp; &nbsp; &nbsp; Ver Rutas &nbsp; &nbsp; &nbsp; </a>
+            </button>
         </div>
     </section>
     

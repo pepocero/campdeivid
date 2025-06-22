@@ -508,6 +508,50 @@ try {
     60% { transform: translateY(-3px); }
 }
 
+/* ✅ NUEVOS ESTILOS PARA ORDENAMIENTO */
+.selector-ordenamiento {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px solid #6c757d;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    color: #495057;
+}
+
+.selector-ordenamiento:focus {
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+    border-color: #495057;
+    background: #fff;
+}
+
+.ordenamiento-info {
+    background: linear-gradient(45deg, #17a2b8, #20c997);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-left: 10px;
+    box-shadow: 0 2px 8px rgba(23, 162, 184, 0.3);
+}
+
+.orden-activo {
+    background: linear-gradient(45deg, #6f42c1, #e83e8c);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 15px;
+    font-size: 0.75em;
+    font-weight: bold;
+    margin-left: 8px;
+    animation: pulse-orden 2s infinite;
+}
+
+@keyframes pulse-orden {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
 /* RESPONSIVE IMPROVEMENTS */
 @media (max-width: 768px) {
     .badge-oferta-flotante {
@@ -519,6 +563,12 @@ try {
     
     .precio-oferta-glow {
         font-size: 1.1em;
+    }
+    
+    .ordenamiento-info, .contador-ofertas {
+        margin-left: 5px;
+        margin-top: 5px;
+        font-size: 0.75em;
     }
 }
 </style>
@@ -532,9 +582,9 @@ try {
             <!-- Filtros -->
             <div class="card mb-4 bg-secondary">
                 <div class="card-body">
-                    <h5 class="card-title">Filtros</h5>
+                    <h5 class="card-title">Filtros y Ordenamiento</h5>
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="filtroNivel">Nivel:</label>
                                 <select class="form-control" id="filtroNivel">
@@ -545,7 +595,7 @@ try {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="filtroPlan">Plan:</label>
                                 <select class="form-control" id="filtroPlan">
@@ -556,10 +606,26 @@ try {
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <!-- ✅ NUEVA COLUMNA: Selector de Ordenamiento -->
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="selectorOrden"><i class="fas fa-sort"></i> Ordenar por:</label>
+                                <select class="form-control selector-ordenamiento" id="selectorOrden">
+                                    <option value="fecha_desc">Más Recientes Primero</option>
+                                    <option value="fecha_asc">Más Antiguas Primero</option>
+                                    <option value="nombre_asc">Nombre (A - Z)</option>
+                                    <option value="nombre_desc">Nombre (Z - A)</option>
+                                    <option value="precio_asc">Precio (Menor a Mayor)</option>
+                                    <option value="precio_desc">Precio (Mayor a Menor)</option>
+                                    <option value="distancia_asc">Distancia (Menor a Mayor)</option>
+                                    <option value="distancia_desc">Distancia (Mayor a Menor)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <label for="filtro-ofertas">Filtros Especiales:</label>                                
-                                <!-- NUEVO: Filtro de ofertas discreto -->
+                                <!-- Filtro de ofertas discreto -->
                                 <div class="filtro-ofertas">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" id="filtroOfertas">
@@ -643,6 +709,75 @@ document.addEventListener('DOMContentLoaded', function() {
     if (rutas.length === 0) {
         sinRutasAlerta.style.display = 'block';
         return;
+    }
+    
+    // ✅ NUEVAS FUNCIONES DE ORDENAMIENTO
+    function ordenarRutas(rutasArray, criterio) {
+        const rutasOrdenadas = [...rutasArray]; // Copia del array para no modificar el original
+        
+        switch(criterio) {
+            case 'fecha_desc': // Más recientes primero (ID mayor)
+                return rutasOrdenadas.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+                
+            case 'fecha_asc': // Más antiguas primero (ID menor)
+                return rutasOrdenadas.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                
+            case 'nombre_asc': // A-Z
+                return rutasOrdenadas.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' }));
+                
+            case 'nombre_desc': // Z-A
+                return rutasOrdenadas.sort((a, b) => b.nombre.localeCompare(a.nombre, 'es', { sensitivity: 'base' }));
+                
+            case 'precio_asc': // Menor a mayor
+                return rutasOrdenadas.sort((a, b) => {
+                    const precioA = calcularPrecioFinal(a);
+                    const precioB = calcularPrecioFinal(b);
+                    return precioA - precioB;
+                });
+                
+            case 'precio_desc': // Mayor a menor
+                return rutasOrdenadas.sort((a, b) => {
+                    const precioA = calcularPrecioFinal(a);
+                    const precioB = calcularPrecioFinal(b);
+                    return precioB - precioA;
+                });
+                
+            case 'distancia_asc': // Menor a mayor
+                return rutasOrdenadas.sort((a, b) => parseFloat(a.distancia || 0) - parseFloat(b.distancia || 0));
+                
+            case 'distancia_desc': // Mayor a menor
+                return rutasOrdenadas.sort((a, b) => parseFloat(b.distancia || 0) - parseFloat(a.distancia || 0));
+                
+            default:
+                return rutasOrdenadas;
+        }
+    }
+    
+    // Función para calcular precio final (con descuento si aplica)
+    function calcularPrecioFinal(ruta) {
+        const precio = parseFloat(ruta.precio) || 0;
+        const enOferta = ruta.en_oferta == 1;
+        const porcentajeOferta = parseFloat(ruta.porcentaje_oferta) || 0;
+        
+        if (enOferta && porcentajeOferta > 0) {
+            return calcularPrecioOferta(precio, porcentajeOferta);
+        }
+        return precio;
+    }
+    
+    // Función para obtener nombre del criterio de ordenamiento
+    function getNombreOrdenamiento(criterio) {
+        const nombres = {
+            'fecha_desc': 'Más Recientes',
+            'fecha_asc': 'Más Antiguas', 
+            'nombre_asc': 'Nombre A-Z',
+            'nombre_desc': 'Nombre Z-A',
+            'precio_asc': 'Precio ↑',
+            'precio_desc': 'Precio ↓',
+            'distancia_asc': 'Distancia ↑',
+            'distancia_desc': 'Distancia ↓'
+        };
+        return nombres[criterio] || 'Personalizado';
     }
     
     // Función para calcular precio con descuento
@@ -733,20 +868,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }).length;
     }
     
-    // Función para actualizar información de resultados
-    function actualizarInfoResultados(rutasVisibles, soloOfertas = false, rutasFiltradas = null) {
+    // ✅ FUNCIÓN ACTUALIZADA: Información de resultados con ordenamiento
+    function actualizarInfoResultados(rutasVisibles, soloOfertas = false, rutasFiltradas = null, criterioOrden = 'fecha_desc') {
         const infoElement = document.getElementById('resultadosInfo');
         const totalOfertas = contarOfertas();
         const ofertasEnFiltro = rutasFiltradas ? contarOfertas(rutasFiltradas) : totalOfertas;
+        const nombreOrden = getNombreOrdenamiento(criterioOrden);
         
         if (rutasVisibles === 0) {
             infoElement.innerHTML = '<i class="fas fa-exclamation-triangle text-warning"></i> No se encontraron rutas con los filtros seleccionados';
         } else if (soloOfertas) {
-            infoElement.innerHTML = `<i class="fas fa-fire text-danger"></i> <span class="badge badge-danger">${rutasVisibles} ruta${rutasVisibles !== 1 ? 's' : ''} en oferta</span> <span class="contador-ofertas">🔥 ${rutasVisibles} OFERTAS</span>`;
+            infoElement.innerHTML = `<i class="fas fa-fire text-danger"></i> <span class="badge badge-danger">${rutasVisibles} ruta${rutasVisibles !== 1 ? 's' : ''} en oferta</span> <span class="contador-ofertas">🔥 ${rutasVisibles} OFERTAS</span> <span class="orden-activo">${nombreOrden}</span>`;
         } else if (rutasVisibles === rutas.length) {
-            infoElement.innerHTML = `</i> <span class="badge badge-dark">${rutasVisibles} rutas totales</span> <span class="contador-ofertas">${totalOfertas} en oferta</span>`;
+            infoElement.innerHTML = `<i class="fas fa-list"></i> <span class="badge badge-dark">${rutasVisibles} rutas totales</span> <span class="contador-ofertas">${totalOfertas} en oferta</span> <span class="ordenamiento-info">${nombreOrden}</span>`;
         } else {
-            infoElement.innerHTML = `<i class="fas fa-filter text-primary"></i> <span class="badge badge-secondary">${rutasVisibles} de ${rutas.length} rutas</span> <span class="contador-ofertas">${ofertasEnFiltro} ofertas</span>`;
+            infoElement.innerHTML = `<i class="fas fa-filter text-primary"></i> <span class="badge badge-secondary">${rutasVisibles} de ${rutas.length} rutas</span> <span class="contador-ofertas">${ofertasEnFiltro} ofertas</span> <span class="ordenamiento-info">${nombreOrden}</span>`;
         }
     }
     
@@ -762,17 +898,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Función para mostrar las rutas filtradas
-    function mostrarRutas(nivelFiltro = '', planFiltro = '', soloOfertas = false) {
+    // ✅ FUNCIÓN PRINCIPAL ACTUALIZADA: Mostrar las rutas filtradas y ordenadas
+    function mostrarRutas(nivelFiltro = '', planFiltro = '', soloOfertas = false, criterioOrden = 'fecha_desc') {
         // Limpiar contenedor
         container.innerHTML = '';
         
-        // Contador para rutas visibles
-        let rutasVisibles = 0;
+        // PASO 1: Filtrar rutas
         let rutasFiltradas = [];
         
         rutas.forEach(ruta => {
-            // Aplicar filtros
             let cumpleFiltros = true;
             
             // Filtro por nivel
@@ -785,7 +919,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 cumpleFiltros = false;
             }
             
-            // NUEVO: Filtro por ofertas
+            // Filtro por ofertas
             if (soloOfertas) {
                 const enOferta = ruta.en_oferta == 1;
                 const tieneDescuento = parseFloat(ruta.porcentaje_oferta) > 0;
@@ -796,51 +930,59 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (cumpleFiltros) {
                 rutasFiltradas.push(ruta);
-                
-                // Preparar datos
-                const nivelClass = {
-                    'Novato': 'bg-info',
-                    'Intermedio': 'bg-warning text-dark',
-                    'Experto': 'bg-danger',
-                    'Piloto nuevo': 'bg-info',
-                    'Domando Curvas': 'bg-warning text-dark',
-                    'Maestro del Asfalto': 'bg-danger'
-                }[ruta.nivel] || 'bg-secondary';
-                
-                const planClass = ruta.plan === 'Premium' ? 'bg-danger' : 'bg-secondary';
-                
-                // Determinar si la card tiene oferta para añadir clase especial
-                const enOferta = ruta.en_oferta == 1;
-                const cardOfertaClass = enOferta ? 'card-oferta' : '';
-                
-                // Generar HTML de precio, ahorro y efectos de oferta SÚPER LLAMATIVOS
-                const precioHTML = generarPrecioHTML(ruta);
-                const ahorroInfo = generarAhorroInfo(ruta);
-                const badgeOfertaFlotante = generarBadgeOfertaFlotante(ruta);
-                const sparkles = generarSparkles(ruta);
-                
-                // Reemplazar placeholders
-                let html = template
-                    .replace(/{{id}}/g, ruta.id)
-                    .replace(/{{nombre}}/g, ruta.nombre)
-                    .replace(/{{descripcion}}/g, ruta.descripcion)
-                    .replace(/{{imagen}}/g, ruta.imagen || 'https://via.placeholder.com/300x200?text=Motocicleta')
-                    .replace(/{{nivel}}/g, ruta.nivel)
-                    .replace(/{{nivelClass}}/g, nivelClass)
-                    .replace(/{{distancia}}/g, Math.round(parseFloat(ruta.distancia)) || '0')
-                    .replace(/{{tiempo}}/g, ruta.tiempo || 'No especificado')
-                    .replace(/{{plan}}/g, ruta.plan)
-                    .replace(/{{planClass}}/g, planClass)
-                    .replace(/{{cardOfertaClass}}/g, cardOfertaClass)
-                    .replace(/{{precioHTML}}/g, precioHTML)
-                    .replace(/{{ahorroInfo}}/g, ahorroInfo)
-                    .replace(/{{badgeOfertaFlotante}}/g, badgeOfertaFlotante)
-                    .replace(/{{sparkles}}/g, sparkles);
-                
-                // Añadir al contenedor
-                container.insertAdjacentHTML('beforeend', html);
-                rutasVisibles++;
             }
+        });
+        
+        // PASO 2: Ordenar rutas filtradas
+        const rutasOrdenadas = ordenarRutas(rutasFiltradas, criterioOrden);
+        
+        // PASO 3: Mostrar rutas ordenadas
+        let rutasVisibles = 0;
+        
+        rutasOrdenadas.forEach(ruta => {
+            // Preparar datos
+            const nivelClass = {
+                'Novato': 'bg-info',
+                'Intermedio': 'bg-warning text-dark',
+                'Experto': 'bg-danger',
+                'Piloto nuevo': 'bg-info',
+                'Domando Curvas': 'bg-warning text-dark',
+                'Maestro del Asfalto': 'bg-danger'
+            }[ruta.nivel] || 'bg-secondary';
+            
+            const planClass = ruta.plan === 'Premium' ? 'bg-danger' : 'bg-secondary';
+            
+            // Determinar si la card tiene oferta para añadir clase especial
+            const enOferta = ruta.en_oferta == 1;
+            const cardOfertaClass = enOferta ? 'card-oferta' : '';
+            
+            // Generar HTML de precio, ahorro y efectos de oferta SÚPER LLAMATIVOS
+            const precioHTML = generarPrecioHTML(ruta);
+            const ahorroInfo = generarAhorroInfo(ruta);
+            const badgeOfertaFlotante = generarBadgeOfertaFlotante(ruta);
+            const sparkles = generarSparkles(ruta);
+            
+            // Reemplazar placeholders
+            let html = template
+                .replace(/{{id}}/g, ruta.id)
+                .replace(/{{nombre}}/g, ruta.nombre)
+                .replace(/{{descripcion}}/g, ruta.descripcion)
+                .replace(/{{imagen}}/g, ruta.imagen || 'https://via.placeholder.com/300x200?text=Motocicleta')
+                .replace(/{{nivel}}/g, ruta.nivel)
+                .replace(/{{nivelClass}}/g, nivelClass)
+                .replace(/{{distancia}}/g, Math.round(parseFloat(ruta.distancia)) || '0')
+                .replace(/{{tiempo}}/g, ruta.tiempo || 'No especificado')
+                .replace(/{{plan}}/g, ruta.plan)
+                .replace(/{{planClass}}/g, planClass)
+                .replace(/{{cardOfertaClass}}/g, cardOfertaClass)
+                .replace(/{{precioHTML}}/g, precioHTML)
+                .replace(/{{ahorroInfo}}/g, ahorroInfo)
+                .replace(/{{badgeOfertaFlotante}}/g, badgeOfertaFlotante)
+                .replace(/{{sparkles}}/g, sparkles);
+            
+            // Añadir al contenedor
+            container.insertAdjacentHTML('beforeend', html);
+            rutasVisibles++;
         });
         
         // Mostrar alerta si no hay rutas después de filtrar
@@ -851,34 +993,37 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Actualizar información de resultados
-        actualizarInfoResultados(rutasVisibles, soloOfertas, rutasFiltradas);
+        actualizarInfoResultados(rutasVisibles, soloOfertas, rutasFiltradas, criterioOrden);
+    }
+    
+    // ✅ FUNCIÓN AUXILIAR para obtener valores actuales de filtros
+    function obtenerFiltrosActuales() {
+        return {
+            nivel: document.getElementById('filtroNivel').value,
+            plan: document.getElementById('filtroPlan').value,
+            soloOfertas: document.getElementById('filtroOfertas').checked,
+            orden: document.getElementById('selectorOrden').value
+        };
+    }
+    
+    // ✅ FUNCIÓN AUXILIAR para aplicar filtros y ordenamiento
+    function aplicarFiltrosYOrden() {
+        const filtros = obtenerFiltrosActuales();
+        mostrarRutas(filtros.nivel, filtros.plan, filtros.soloOfertas, filtros.orden);
     }
     
     // Mostrar todas las rutas inicialmente
     mostrarRutas();
     actualizarEstadoFiltroOfertas();
     
-    // Configurar eventos de filtrado
-    document.getElementById('filtroNivel').addEventListener('change', function() {
-        const nivelSeleccionado = this.value;
-        const planSeleccionado = document.getElementById('filtroPlan').value;
-        const soloOfertas = document.getElementById('filtroOfertas').checked;
-        mostrarRutas(nivelSeleccionado, planSeleccionado, soloOfertas);
-    });
+    // ✅ EVENTOS ACTUALIZADOS: Configurar eventos de filtrado y ordenamiento
+    document.getElementById('filtroNivel').addEventListener('change', aplicarFiltrosYOrden);
+    document.getElementById('filtroPlan').addEventListener('change', aplicarFiltrosYOrden);
     
-    document.getElementById('filtroPlan').addEventListener('change', function() {
-        const planSeleccionado = this.value;
-        const nivelSeleccionado = document.getElementById('filtroNivel').value;
-        const soloOfertas = document.getElementById('filtroOfertas').checked;
-        mostrarRutas(nivelSeleccionado, planSeleccionado, soloOfertas);
-    });
-    
-    // NUEVO: Event listener para filtro de ofertas
+    // Event listener para filtro de ofertas
     document.getElementById('filtroOfertas').addEventListener('change', function() {
         actualizarEstadoFiltroOfertas();
-        const nivelSeleccionado = document.getElementById('filtroNivel').value;
-        const planSeleccionado = document.getElementById('filtroPlan').value;
-        mostrarRutas(nivelSeleccionado, planSeleccionado, this.checked);
+        aplicarFiltrosYOrden();
         
         // Efecto especial cuando se activa el filtro de ofertas
         if (this.checked) {
@@ -898,13 +1043,34 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Event listener para limpiar filtros
+    // ✅ NUEVO: Event listener para ordenamiento
+    document.getElementById('selectorOrden').addEventListener('change', function() {
+        aplicarFiltrosYOrden();
+        
+        // Efecto visual cuando se cambia el ordenamiento
+        const nombreOrden = getNombreOrdenamiento(this.value);
+        const mensaje = document.createElement('div');
+        mensaje.className = 'alert alert-info position-fixed';
+        mensaje.style.cssText = 'top: 20px; right: 20px; z-index: 9999; opacity: 0; transition: opacity 0.3s;';
+        mensaje.innerHTML = `<i class="fas fa-sort"></i> <strong>Ordenando por: ${nombreOrden}</strong>`;
+        document.body.appendChild(mensaje);
+        
+        // Animación de aparición
+        setTimeout(() => mensaje.style.opacity = '1', 100);
+        setTimeout(() => {
+            mensaje.style.opacity = '0';
+            setTimeout(() => document.body.removeChild(mensaje), 300);
+        }, 2000);
+    });
+    
+    // ✅ ACTUALIZADO: Event listener para limpiar filtros
     document.getElementById('limpiarFiltros').addEventListener('click', function() {
         document.getElementById('filtroNivel').value = '';
         document.getElementById('filtroPlan').value = '';
         document.getElementById('filtroOfertas').checked = false;
+        document.getElementById('selectorOrden').value = 'fecha_desc'; // Resetear a valor por defecto
         actualizarEstadoFiltroOfertas();
-        mostrarRutas();
+        mostrarRutas(); // Mostrar todas las rutas con orden por defecto
     });
 });
 </script>

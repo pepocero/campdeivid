@@ -85,6 +85,7 @@ $compras = $db->query("
                         }
                         ?>
                         
+                        <!-- BOTON DE DESCARGA ANTIGUO
                         <div class="d-grid gap-2">
                             <a href="<?= $rutaArchivo ?>" class="btn btn-sm btn-success" download>
                                 <i class="fas fa-download"></i> Descargar GPX
@@ -93,7 +94,35 @@ $compras = $db->query("
                                 <?php endif; ?>
                             </a>
                             <small class="text-muted text-center"><?= $descripcion ?></small>
-                        </div>
+                        </div> -->
+<!-- BOTON DE DESCARGA REGISRA BAJADA -->
+<?php
+$csrf = Token::generate();
+
+// Construir URL limpia del archivo GPX
+$gpxFile = $compra->gpx;
+$gpxFile = preg_replace('~^gpx/~', 'gpx/base/', $gpxFile);
+echo '<br>GPX File: ' . $gpxFile; // Debugging line
+$gpxUrl  = (strpos($gpxFile, '/') === 0) ? $gpxFile : $us_url_root . $gpxFile;
+?>
+
+<a href="<?= 
+            
+
+            // Si $ruta->gpx ya empieza por «/», NO añadimos $us_url_root.
+            $gpxUrl = (strpos($gpxFile, '/') === 0)
+             ? $gpxFile
+             : $us_url_root . $gpxFile;
+        ?>"
+   class="btn btn-primary w-100 mt-2"
+   data-ruta="<?= $compra->ruta_id ?>"
+   data-csrf="<?= $csrf ?>"
+   download
+   onclick="registrarDescarga(this)">
+   <i class="fas fa-download me-1"></i> Descargar GPX
+</a>
+
+
                     </div>
                     <div class="card-footer p-2 bg-light">
                         <small class="text-muted d-block text-truncate" title="ID: <?= $compra->paypal_transaction_id ?>">
@@ -106,5 +135,21 @@ $compras = $db->query("
         </div>
     <?php endif; ?>
 </div>
+
+
+<script>
+function registrarDescarga(enlace) {
+  fetch('registrar_descarga.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      csrf: enlace.dataset.csrf,
+      ruta_id: enlace.dataset.ruta,
+      tipo: 'venta'
+    })
+  }).catch(console.error);
+}
+</script>
+
 
 <?php require_once $abs_us_root.$us_url_root.'users/includes/html_footer.php'; ?>

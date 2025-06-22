@@ -231,6 +231,8 @@ require_once $abs_us_root . $us_url_root . 'users/includes/page_footer.php';
     }
 }
 </style>
+<div id="scrollToTop" style="position:fixed;bottom:20px;right:20px;width:50px;height:50px;background:#820F2F;color:white;border-radius:50%;display:none;align-items:center;justify-content:center;cursor:pointer;z-index:9999;box-shadow:0 4px 12px rgba(0,123,255,0.3);"><i class="fas fa-chevron-up"></i></div>
+
 <div style="height: 20rem;"></div>
 <footer class="custom-footer">
     <div class="container">
@@ -256,12 +258,6 @@ require_once $abs_us_root . $us_url_root . 'users/includes/page_footer.php';
                         </a>
                     </div>
                 </div>
-                <!-- <div class="social-links">
-                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
-                    <a href="https://www.instagram.com/rutascandeivid" target="_blank" rel="noopener" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
-                    <a href="#" class="social-link"><i class="fab fa-whatsapp"></i></a>
-                </div> -->
             </div>
             
             <!-- Columna 2 - Enlaces Rápidos -->
@@ -318,6 +314,18 @@ require_once $abs_us_root . $us_url_root . 'users/includes/page_footer.php';
     </div>
 </footer>
 
-</body>
+<script>
+window.addEventListener('scroll', function() {
+    var btn = document.getElementById('scrollToTop');
+    if (window.pageYOffset > 300) {
+        btn.style.display = 'flex';
+    } else {
+        btn.style.display = 'none';
+    }
+});
+document.getElementById('scrollToTop').addEventListener('click', function() {
+    window.scrollTo({top: 0, behavior: 'smooth'});
+});
+</script>
 
 <?php require_once($abs_us_root.$us_url_root.'users/includes/html_footer.php');?>
